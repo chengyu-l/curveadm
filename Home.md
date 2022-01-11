@@ -1,5 +1,1 @@
-Welcome to the curveadm wiki!
-
-* A
-* B
-* C
+<div align="center"><img src="https://raw.githubusercontent.com/wiki/opencurve/curveadm/image/logo.png"/></div>
