@@ -1,9 +1,23 @@
 目录
 ===
+
+* [部署 tgt](#部署-tgt) 
 * [升级 CurveAdm](#升级-curveadm)
 * [错误码表](#错误码表)
 * [问题与反馈](#问题与反馈)
 * [参与 CurveAdm 的开发](#参与-curveadm-的开发)
+
+部署 tgt
+---
+
+如果你要在除 Linux 外的其它操作系统中使用 CurveBS 卷，可以部署[网易高性能版本 tgt][curve-tgt]：
+
+* 首先你需要部署一个 CurveBS 集群，详见[部署 CurveBS 集群][curvebs-cluster-deployment]
+* 其次，你需要部署 iSCSI 服务端，详见[部署 tgt][curve-tgt-deployment]
+* 最后，根据当前操作系统选择相应的方式连接 iSCSI target：
+  * [Linux][linux-initiator]
+  * [Windows][windows-initiator]
+  * [MacOS][macos-initiator]
 
 升级 CurveAdm
 ---
@@ -51,3 +65,9 @@ CurveAdm 的整体实现逻辑较简单清晰，并具有较好的模块抽象�
 * [快速上手 CurveAdm 开发](develop)
 
 [issue]: https://github.com/opencurve/curveadm/issues
+[curve-tgt]: https://github.com/opencurve/curve-tgt
+[curvebs-cluster-deployment]: https://github.com/opencurve/curveadm/wiki/curvebs-cluster-deployment
+[curve-tgt-deployment]: https://github.com/opencurve/curveadm/wiki/curve-tgt-deployment
+[linux-initiator]: https://www.unixmen.com/attach-iscsi-target-disks-linux-servers/
+[windows-initiator]: https://jingyan.baidu.com/article/e4511cf37feade2b845eaff8.html
+[macos-initiator]: https://apple.stackexchange.com/questions/324745/iscsi-mounts-in-macos

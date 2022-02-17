@@ -21,7 +21,7 @@
 部署客户端
 ===
 * [部署 CurveBS 客户端](curvebs-client-deployment)
-* [部署 CurveFS 客户端](curvefs-client-deployment) 
+* [部署 CurveFS 客户端](curvefs-client-deployment)
 
 运维操作
 ===
@@ -31,6 +31,7 @@
 
 其他
 ===
+* [部署 tgt](others#部署-tgt)
 * [升级 CurveAdm](others#升级-curveadm)
 * [错误码表](others#错误码表)
 * [问题与反馈](others#问题与反馈)
