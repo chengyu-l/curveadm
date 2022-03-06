@@ -228,7 +228,7 @@ $ curveadm enter <Id>
 
 在该容器内执行以下命令查看：
 ```shell
-$ curve_ops_tools status
+$ curve_ops_tool status
 ```
 
 如果集群健康，在输出的开头会出现 `cluster is healthy` 的字样。
