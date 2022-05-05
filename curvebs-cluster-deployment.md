@@ -69,9 +69,8 @@ $ curveadm format -f format.yaml
 > 考虑到格式化整个过程耗时较长，`curveadm format` 命令对每块磁盘成功启动一个格式化进程容器后即返回，
 > 所以该命令成功返回并不意味着格式化已完成。
 > 
-> 用户可通过 `curveadm format --status` 命令查看格式化进度，当 `Status` 显示为 `Idea` 状态，
+> 用户可通过 `curveadm format --status` 命令查看格式化进度，当 `Status` 显示为 `Done` 状态，
 > 并且 `Formatted` 显示已格式化百分比大于设定百分比时，表示该磁盘格式化已完成。
-
 
 第 4 步：准备集群拓扑文件
 ---
