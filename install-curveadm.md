@@ -30,7 +30,7 @@ CurveBS/CurveFS 所有服务都运行在 Docker 容器内，用户需要在每�
 你可以在服务器上运行以下命令来检测：
 
 ```shell
-$ sudo docker run -rm hello-world
+$ sudo docker run --rm hello-world
 ```
 
 这个命令会下载一个测试映像，并在容器中运行它。当容器运行时，它打印一条消息并退出。
