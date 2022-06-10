@@ -417,10 +417,6 @@ global:
   container_image: opencurvedocker/curvefs:latest
   log_dir: /home/${user}/curvefs/logs/${service_role}
   data_dir: /home/${user}/curvefs/data/${service_role}
-  s3.ak: <minioadmin>
-  s3.sk: <minioadmin>
-  s3.endpoint: <http://127.0.0.1:9000>
-  s3.bucket_name: <>
   variable:
     machine1: 10.0.1.1
     machine2: 10.0.1.2
@@ -489,10 +485,10 @@ metaserver_services:
 | report_usage     |          | true                           | 是否匿名上报用户集群使用量。开启该选项后，curveadm 会匿名上报用户集群 UUID 以及集群使用量，来帮助 curve 团队更好的了解用户及改进服务 |
 | log_dir          |          |                                | 保存服务日志的目录。如果不配置该选项，日志默认保存在容器内的指定目录，一旦容器被清理，日志将会随之删除                               |
 | data_dir         |          |                                | 保存服务数据的目录。如果不配置该选项，数据默认保存在容器内的指定目录，一旦容器被清理，数据将会随之丢失                               |
-| s3.ak            |          |                                | S3 服务的 Access Key。用于上传实际数据                                                                                               |
-| s3.sk            |          |                                | S3 服务的 Secret Key。用于上传实际数据                                                                                               |
-| s3.endpoint      |          |                                | S3 服务地址。用于上传实际数据                                                                                                        |
-| s3.bucket_name   |          |                                | S3 服务桶名。用于上传实际数据                                                                                                        |
+| s3.ak            |          |                                | S3 服务的 Access Key。用于上传实际数据。仅在使用S3存储引擎并且创建文件系统时需要                                                                                               |
+| s3.sk            |          |                                | S3 服务的 Secret Key。用于上传实际数据。仅在使用S3存储引擎并且创建文件系统时需要                                                                                               |
+| s3.endpoint      |          |                                | S3 服务地址。用于上传实际数据。仅在使用S3存储引擎并且创建文件系统时需要                                                                                                        |
+| s3.bucket_name   |          |                                | S3 服务桶名。用于上传实际数据。仅在使用S3存储引擎并且创建文件系统时需要                                                                                                        |
 | variable         |          |                                | 变量区块。可将自定义变量填写在该区块                                                                                                 |
 
 所有未在拓扑文件上出现的配置项，我们都将使用默认配置值，你可以通过点击以下连接来查看各服务配置项及相关默认值：
