@@ -26,8 +26,8 @@ ssh_port: 22
 private_key_file: /home/curve/.ssh/id_rsa
 s3.ak: <>
 s3.sk: <>
-s3.endpoint: nos-eastchina1.126.net
-s3.bucket_name: curvefs
+s3.endpoint: <>
+s3.bucket_name: <>
 container_image: opencurvedocker/curvefs:latest
 mdsOpt.rpcRetryOpt.addrs: 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
 log_dir: /home/curve/curvebs/logs/client
