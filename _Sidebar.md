@@ -23,6 +23,12 @@
 * [部署 CurveBS 客户端](curvebs-client-deployment)
 * [部署 CurveFS 客户端](curvefs-client-deployment)
 
+部署监控
+===
+
+* [部署 CurveBS 监控](curvebs-monitor-deployment)
+* [部署 CurveFS 监控](curvefs-monitor-deployment)
+
 运维操作
 ===
 * [常见运维操作](maintain-curve)
