@@ -105,7 +105,7 @@ sudo bash curve-monitor.sh start
 - 启动更新 target.json 服务：
 
 ```bash
-# 请将 opencurvedocker/curvebs:v1.2 更换为自己部署的镜像
+# 请将 opencurvedocker/curvefs:v1.2 更换为自己部署的镜像
 docker run -d -v /etc/curvefs/monitor/prometheus:/curvefs/monitor/prometheus -v /etc/curvefs/:/etc/curvefs/ opencurvedocker/curvefs:v1.2 entrypoint.sh --role=monitor
 ```
 
