@@ -110,7 +110,7 @@ docker run -d -v /etc/curvefs/monitor/prometheus:/curvefs/monitor/prometheus -v 
 ```
 
 该服务更新容器内的 /curvefs/monitor/prometheus/target.json 文件，而 prometheus 需要读取该文件，从而抓去相应服务的监控数据。
-因此将 /etc/curvefs/monitor/prometheus 映射到 /curvefs/monitor/prometheus。
+因此需要将 /etc/curvefs/monitor/prometheus 映射到 /curvefs/monitor/prometheus。
 
 **注意**：
 更新 target.json 镜像（本文中为 opencurvedocker/curvefs:v1.2，请更换为自己的镜像）尽量以所部署的镜像为准，较老的镜像可能不支持相关服务，使用命令 `docker logs $(CONTAINER ID)` (CONTAINER ID 为`docker run -d`的输出) 会出现下列提示，请联系开发者。
