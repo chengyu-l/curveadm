@@ -1,7 +1,7 @@
 目录
 ===
 
-* [部署 tgt](#部署-tgt) 
+* [部署 tgt](#部署-tgt)
 * [升级 CurveAdm](#升级-curveadm)
 * [错误码表](#错误码表)
 * [问题与反馈](#问题与反馈)
@@ -31,25 +31,21 @@ $ curveadm -u
 同时，CurveAdm 也支持升级到指定版本：
 
 ```shell
-$ CURVEADM_VERSION=v0.0.13 curveadm -u
+$ CURVEADM_VERSION=v0.1.0 curveadm -u
 ```
 
 | 稳定版本    | 发布时间           |
 | :---        | :---               |
+| **v0.1.0** | 2022 年 8 月 16 号 |
 | **v0.0.13** | 2022 年 1 月 20 号 |
-
-错误码表
----
-
-> :hourglass_flowing_sand: 该功能正在开发中，敬请期待 
 
 问题与反馈
 ---
- 
+
 如果您有任何建议或遇到问题需要帮助，可以通过以下 2 种途径反馈或找到我们：
 
 * [提交 issue][issue]
- 
+
 * 通过扫描以下二维码，添加微信群
 
 <img src="https://raw.githubusercontent.com/opencurve/curve/master/docs/images/curve-wechat.jpeg" width="300px" height="300px">

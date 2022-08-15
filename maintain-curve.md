@@ -17,6 +17,8 @@ CurveAdm 常见运维操作
 * [修改服务配置](#修改服务配置)
 * [进入服务容器](#进入服务容器)
 * [清理集群](#清理集群)
+* [查看客户端状态](#查看客户端状态)
+* [进入客户端容器](#进入客户端容器)
 * [获得 Curve 团队技术支持](#获得-curve-团队技术支持)
 
 查看集群列表
@@ -60,7 +62,7 @@ $ curveadm cluster rm <cluster-name>
 ```
 
 > :warning: **警告：**
-> 
+>
 > 删除集群后，该集群相关信息将全部被清除，请谨慎操作。`curveadm` 支持同时管理多个集群，在不必要的情况下，请勿删除集群。
 
 导出集群
@@ -72,12 +74,12 @@ $ curveadm cluster rm <cluster-name>
 
 ```shell
 $ curveadm cluster export <cluster-name> [-o database-file-path]
-``` 
+```
 
 > :bulb: **提示：**
-> 
+>
 > 导出的集群文件以集群 `UUID` 为键，该 `UUID` 全局唯一，值则主要保存了以下 2 类信息：
-> * 集群的服务配置，即集群拓扑 
+> * 集群的服务配置，即集群拓扑
 > * 每个服务的相关信息，包括服务 ID、服务运行的容器 ID 等
 
 导入集群
@@ -122,7 +124,7 @@ $ curveadm config commit <topology.yaml>
 ```
 
 > :bulb: **提醒：**
-> 
+>
 > 在提交本地集群拓扑时，终端会显示本地集群拓扑与当期集群拓扑之间的差异，请仔细对比，以防错误提交。
 
 对比集群拓扑
@@ -141,33 +143,34 @@ $ curveadm config diff <topology.yaml>
 $ curveadm status
 ```
 
-CurveAdm 默认会显示服务 ID、服务角色、主机地址、已部署的副本服务数量、容器 ID、运行状态：
+CurveAdm 默认会显示服务 ID、服务角色、主机名、已部署的复制服务数量、容器 ID、运行状态：
 
 ```shell
 Get Service Status: [OK]
 
-cluster name    : my-cluster
-cluster kind    : curvebs
-cluster mds addr: 10.0.1.1:6666,10.0.1.2:6666,10.0.1.3:6666
+cluster name      : my-cluster
+cluster kind      : curvebs
+cluster mds addr  : 10.0.1.1:6666,10.0.1.2:6666,10.0.1.3:6666
+cluster mds leader: 10.0.1.1:6666 / 505da008b59c
 
-Id            Role           Host      Replica  Container Id  Status
---            ----           ----      -------  ------------  ------
-c9570c0d0252  etcd           10.0.1.1  1/1      ced84717bf4b  Up 45 hours
-493b7831907c  etcd           10.0.1.2  1/1      907f8b84f527  Up 45 hours
-8438cc5ecb52  etcd           10.0.1.3  1/1      44eca4798424  Up 45 hours
-505da008b59c  mds            10.0.1.1  1/1      37c05bbb39af  Up 45 hours
-e7bfb934182b  mds            10.0.1.2  1/1      044b56281928  Up 45 hours
-1b322781339c  mds            10.0.1.3  1/1      b00481b9872d  Up 45 hours
-<replica>     chunkserver    10.0.1.1  3/3      <replica>     RUNNING
-<replica>     chunkserver    10.0.1.2  3/3      <replica>     RUNNING
-<replica>     chunkserver    10.0.1.3  3/3      <replica>     RUNNING
-2912bbdbcb48  snapshotclone  10.0.1.1  1/1      8b7a14b872ff  Up 45 hours
-b862ef6720ed  snapshotclone  10.0.1.2  1/1      8e2a4b9e16b4  Up 45 hours
-ed4533e903d9  snapshotclone  10.0.1.3  1/1      a35c30e3143d  Up 45 hours
+Id            Role           Host          Replicas  Container Id  Status
+--            ----           ----          -------   ------------  ------
+c9570c0d0252  etcd           server-host1  1/1       ced84717bf4b  Up 45 hours
+493b7831907c  etcd           server-host2  1/1       907f8b84f527  Up 45 hours
+8438cc5ecb52  etcd           server-host3  1/1       44eca4798424  Up 45 hours
+505da008b59c  mds            server-host1  1/1       37c05bbb39af  Up 45 hours
+e7bfb934182b  mds            server-host2  1/1       044b56281928  Up 45 hours
+1b322781339c  mds            server-host3  1/1       b00481b9872d  Up 45 hours
+<replicas>    chunkserver    server-host1  3/3       <replicas>    RUNNING
+<replicas>    chunkserver    server-host2  3/3       <replicas>    RUNNING
+<replicas>    chunkserver    server-host3  3/3       <replicas>    RUNNING
+2912bbdbcb48  snapshotclone  server-host1  1/1       8b7a14b872ff  Up 45 hours
+b862ef6720ed  snapshotclone  server-host2  1/1       8e2a4b9e16b4  Up 45 hours
+ed4533e903d9  snapshotclone  server-host3  1/1       a35c30e3143d  Up 45 hours
 ```
 
-* 若想查看其余信息，如日志目录、数据目录等，可添加 `-v` 参数
-* 对于同一台主机上的[副本][replicas]服务来说，其状态默认是折叠的，可添加 `-s` 参数来显示每一个副本服务
+* 若想查看其余信息，如监听端口、日志目录、数据目录等，可添加 `-v` 参数
+* 对于同一台主机上的[复制][replicas]服务来说，其状态默认是折叠的，可添加 `-s` 参数来显示每一个副本服务
 
 启动服务
 ---
@@ -192,7 +195,7 @@ $ curveadm start --id c9570c0d0252
 
 #### 示例 2： 启动 `10.0.1.1` 这台主机上的所有 `MDS` 服务
 ```shell
-$ curveadm start --host 10.0.1.1 --role mds 
+$ curveadm start --host 10.0.1.1 --role mds
 ```
 
 停止服务
@@ -218,11 +221,11 @@ $ curveadm stop --id c9570c0d0252
 
 #### 示例 2： 停止 `10.0.1.1` 这台主机上的所有 `MDS` 服务
 ```shell
-$ curveadm stop --host 10.0.1.1 --role mds 
+$ curveadm stop --host 10.0.1.1 --role mds
 ```
 
 > :warning: **警告：**
-> 
+>
 > 停止服务可能造成集群不健康，导致客户端 IO 失败，请谨慎操作。
 
 重启服务
@@ -248,7 +251,7 @@ $ curveadm restart --id c9570c0d0252
 
 #### 示例 2： 重启 `10.0.1.1` 这台主机上的所有 `MDS` 服务
 ```shell
-$ curveadm restart --host 10.0.1.1 --role mds 
+$ curveadm restart --host 10.0.1.1 --role mds
 ```
 
 修改服务配置
@@ -268,18 +271,18 @@ $ vim topology.yaml
 > ```shell
 > $ curveadm config show > topology.yaml
 > ```
- 
+
 #### 第 2 步：提交修改
 ```shell
 $ curveadm config commit topology.yaml
 ```
 
 #### 第 3 步：重新加载服务
- 
+
 ```shell
 $ curveadm reload
 ```
- 
+
 CurveAdm 默认重新加载集群中的所有服务，如需重新加载指定服务，可通过添加以下 3 个选项来实现：
 
 * `--id`: 重新加载指定 `id` 的服务
@@ -296,11 +299,11 @@ $ curveadm reload --id c9570c0d0252
 
 #### 示例 2：重新加载 `10.0.1.1` 这台主机上的所有 `MDS` 服务
 ```shell
-$ curveadm reload --host 10.0.1.1 --role mds 
+$ curveadm reload --host 10.0.1.1 --role mds
 ```
 
 > :bulb: **提醒：**
-> 
+>
 > 命令 [restart](#重启服务) 与 `reload` 的区别在于，
 > `reload` 会根据当前集群拓扑的变更修改相应服务的配置，然后再重启服务，
 > 而 `restart` 则只会简单的重启服务。
@@ -317,9 +320,9 @@ $ curveadm enter <id>
 服务对应的 `id` 可通过 [curveadm status](#查看集群状态) 来查看。
 
 > :bulb: **提醒：**
-> 
+>
 > CurveAdm 默认进入该服务的根目录，服务根目录包含了服务所需的所有文件，其目录结构如下：
-> 
+>
 > ```shell
 > /curvefs/mds  # 服务根目录
 > |-- conf      # 配置目录
@@ -366,9 +369,56 @@ $ curveadm clean --host 10.0.1.1 --role mds
 ```
 
 > 📢 **注意：**
-> 
+>
 > 当清理服务容器时，请确保相应服务已停止，你可以使用 [stop](#停止服务) 命令来停止指定服务。
- 
+
+
+查看客户端状态
+---
+
+```shell
+$ curveadm client status
+```
+
+CurveAdm 默认会显示客户端 ID、客户端类型、主机、容器 ID、运行状态、辅助信息：
+
+```shell
+Get Client Status: [OK]
+
+Id            Kind     Host          Container Id  Status       Aux Info
+--            ----     ----          ------------  ------       --------
+362d538778ad  curvebs  server-host1  cfa00fd01ae8  Up 36 hours  {"user":"curve","volume":"/test1"}
+b0d56cfaad14  curvebs  server-host2  c0301eff2af0  Up 36 hours  {"user":"curve","volume":"/test2"}
+c700e1f6acab  curvebs  server-host3  52554173a54f  Up 36 hours  {"user":"curve","volume":"/test3"}
+```
+
+进入客户端容器
+---
+
+我们可以远程进入服务容器内，查看客户端进程、配置、日志、数据等信息:
+
+```shell
+$ curveadm client <id>
+```
+
+客户端对应的 `id` 可通过 [curveadm client status](#查看客户端状态) 来查看。
+
+> :bulb: **提醒：**
+>
+> CurveAdm 默认进入该客户端的根目录，客户端根目录包含了服务所需的所有文件，其目录结构如下：
+>
+> ```shell
+> /curvefs/client  # 服务根目录
+> |-- conf      # 配置目录
+> |   `-- client.conf
+> |-- data      # 数据目录
+> |-- logs      # 日志目录
+> |   `-- curvefs-client.log.INFO.20220120-142115.6
+> `-- sbin      # 二进制目录
+>     `-- curve-fuse
+> ```
+
+
 获得 Curve 团队技术支持
 ---
 
@@ -380,9 +430,17 @@ $ curveadm clean --host 10.0.1.1 --role mds
 $ curveadm support
 ```
 
+你可以通过添加 `--client` 参数指定客户端 ID 来一并上报客户端日志，客户端 ID 可通过 [curveadm client status](#查看客户端状态) 查看。
+
+#### 示例
+
+```shell
+$ curveadm support --client 462d538778ad
+```
+
 > :bulb: **提醒：**
-> 
+>
 > 当数据上传成功后，终端会显示相应的秘钥，请将该秘钥[告诉 Curve 团队成员][support]，以供他们分析及排查问题。
 
 [support]: https://github.com/opencurve/curveadm/wiki/others#%E9%97%AE%E9%A2%98%E4%B8%8E%E5%8F%8D%E9%A6%88
-[replicas]: https://github.com/opencurve/curveadm/wiki/topology#replica 
+[replicas]: https://github.com/opencurve/curveadm/wiki/topology#replica

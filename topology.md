@@ -6,7 +6,7 @@
 * [特性](#特性)
   * [层级](#层级)
   * [变量](#变量)
-  * [replica](#replica)
+  * [replicas](#replicas)
 * [CurveBS 集群拓扑](#curvebs-集群拓扑)
 * [CurveFS 集群拓扑](#curvefs-集群拓扑)
 
@@ -21,9 +21,6 @@
 ```yaml
 kind: curvefs
 global:
-  user: curve
-  ssh_port: 22
-  private_key_file: /home/curve/.ssh/id_rsa
   container_image: opencurvedocker/curvefs:latest
   data_dir: /home/curve/curvefs/data/${service_role}
   log_dir: /home/curve/curvefs/logs/${service_role}
@@ -34,9 +31,9 @@ etcd_services:
     listen.port: 2380
     listen.client_port: 2379
   deploy:
-    - host: 10.0.1.1
-    - host: 10.0.1.2
-    - host: 10.0.1.3
+    - host: server-host1
+    - host: server-host2
+    - host: server-host3
 
 mds_services:
   config:
@@ -44,9 +41,9 @@ mds_services:
     listen.port: 6700
     listen.dummy_port: 7700
   deploy:
-    - host: 10.0.1.1
-    - host: 10.0.1.2
-    - host: 10.0.1.3
+    - host: server-host1
+    - host: server-host2
+    - host: server-host3
 
 metaserver_services:
   config:
@@ -54,9 +51,9 @@ metaserver_services:
     listen.port: 6800
     metaserver.loglevel: 0
   deploy:
-    - host: 10.0.1.1
-    - host: 10.0.1.2
-    - host: 10.0.1.3
+    - host: server-host1
+    - host: server-host2
+    - host: server-host3
       config:
         metaserver.loglevel: 3
 ```
@@ -70,7 +67,7 @@ metaserver_services:
 * [变量](#变量)
 * [replica](#replica)
 
-### 层级 
+### 层级
 
 拓扑文件中的配置分为以下 3 个层级：
   * 全局配置：作用于拓扑文件中的全部服务实例
@@ -79,7 +76,7 @@ metaserver_services:
 
 配置优先级为：`实例配置` > `服务配置` > `全局配置`。
 
-![topology-level](image/topology_level.png)
+![topology-level](image/topology_level.jpg)
 
 #### 示例：使用配置层级简化拓扑文件
 
@@ -89,13 +86,13 @@ metaserver_services:
 mds_services:
   config:
   deploy:
-    - host: 10.0.1.1
+    - host: server-host1
       config:
         leader.electionTimeoutMs: 3
-    - host: 10.0.1.2
+    - host: server-host2
       config:
         leader.electionTimeoutMs: 3
-    - host: 10.0.1.3
+    - host: server-host3
       config:
         leader.electionTimeoutMs: 3
 ```
@@ -105,9 +102,9 @@ mds_services:
   config:
     leader.electionTimeoutMs: 3
   deploy:
-    - host: 10.0.1.1
-    - host: 10.0.1.2
-    - host: 10.0.1.3
+    - host: server-host1
+    - host: server-host2
+    - host: server-host3
 ```
 
 ### 变量
@@ -115,15 +112,14 @@ mds_services:
 为减少重复配置、精简拓扑文件，我们内置了以下变量，
 这些变量在不同的上下文中具备不同的值，可用于拓扑文件配置的填写：
 
-| 变量名                        | 说明                                                                                                                                                                       | 示例                                                        |
-| :---                          | :---                                                                                                                                                                       | :---                                                        |
-| `${user}`                     | 配置的用户名。其值等同于用户在拓扑文件中配置的 `user` 配置项                                                                                                               | `curve`                                                     |
-| `${service_host}`             | 服务主机地址。在不同的主机上部署服务时该变量具备不同的值，如在主机 `10.0.1.1` 上部署服务时，该变量值为 `10.0.1.1`，在主机 `10.0.1.2` 上部署服务时，则该变量值为 `10.0.1.2` | `10.0.1.1`                                                  |
-| `${service_role}`             | 服务角色名。在部署不同类型的服务时，具备不同的角色名，如在部署 etcd 服务时，该变量值为 etcd，而在部署 mds 服务时，则该变量值为 mds                                         | `etcd`、`mds`、`chunkserver`、`snapshotclone`、`metaserver` |
-| `${service_host_sequence}`    | 服务主机序列号。部署同类型服务时，根据 `deploy` 列表，在第一台主机上部署服务时，该序列号为 0，在第二台主机上部署服务时，该序列号为 1，依此类推                             | `0`、`1`、`2`                                               |
-| `${service_replica_sequence}` | 服务副本序列号。在将同一类型的服务在同一主机上部署多个副本实例时，部署第一个副本时，该序列号为 0，部署第二个副本时，该序列号为 1，依此类推                                 | `0`、`1`、`2`                                               |
-| `${format_replica_sequence}`  | 格式化后的服务副本序列号。其值等同于 `${service_replica_sequence}` 变量，但是该序列号加了前置 0                                                                            | `00`、`01`、`02`                                            |
-| `${random_uuid}`              | 随机 UUID                                                                                                                                                                  | `6fa8f01c411d7655d0354125c36847bb`                          |
+| 变量名                         | 说明                                                                                                                                                                                                                                        | 示例                                                        |
+| :---                           | :---                                                                                                                                                                                                                                        | :---                                                        |
+| `${service_host}`              | 服务主机地址。在不同的主机上部署服务时该变量具备不同的值，如在主机 `server-host1` 上部署服务时，该变量值为主机 `server-host1` 对应的地址，即 `10.0.1.1`，在主机 `server-host2` 上部署服务时，则该变量值为 `10.0.1.2`，详见[主机模块](hosts) | `10.0.1.1`                                                  |
+| `${service_role}`              | 服务角色名。在部署不同类型的服务时，具备不同的角色名，如在部署 etcd 服务时，该变量值为 etcd，而在部署 mds 服务时，则该变量值为 mds                                                                                                          | `etcd`、`mds`、`chunkserver`、`snapshotclone`、`metaserver` |
+| `${service_host_sequence}`     | 服务主机序列号。部署同类型服务时，根据 `deploy` 列表，在第一台主机上部署服务时，该序列号为 0，在第二台主机上部署服务时，该序列号为 1，依此类推                                                                                              | `0`、`1`、`2`                                               |
+| `${service_replicas_sequence}` | 服务副本序列号。在将同一类型的服务在同一主机上部署多个副本实例时，部署第一个副本时，该序列号为 0，部署第二个副本时，该序列号为 1，依此类推                                                                                                  | `0`、`1`、`2`                                               |
+| `${format_replicas_sequence}`  | 格式化后的服务副本序列号。其值等同于 `${service_replicas_sequence}` 变量，但是该序列号加了前置 0                                                                                                                                            | `00`、`01`、`02`                                            |
+| `${random_uuid}`               | 随机 UUID                                                                                                                                                                                                                                   | `6fa8f01c411d7655d0354125c36847bb`                          |
 
 当前，除了内置变量外，用户也可以自定义变量, 在 `variable` 区块添加相应变量即可：
 
@@ -136,19 +132,21 @@ global:
 
 下面我们将通过 3 个示例来展示变量的应用，在每个示例中都有 2 份不同的配置，但是其都具备相同的配置效果：
 
+> 我们假定 server-host{1,2,3} 对应的地址分别为 10.0.1.{1,2,3}，并已通过[主机模块][hosts]提交
+
 #### 示例 1：在每台主机上部署一个 etcd 实例
 
 ```shell
 etcd_services:
   config:
   deploy:
-    - host: 10.0.1.1
+    - host: server-host1
       config:
-        listen.ip: 10.0.1.1 
-    - host: 10.0.1.2
+        listen.ip: 10.0.1.1
+    - host: server-host2
       config:
         listen.ip: 10.0.1.2
-    - host: 10.0.1.3
+    - host: serevr-host3
       config:
         listen.ip: 10.0.1.3
 ```
@@ -158,9 +156,9 @@ etcd_services:
   config:
     listen.ip: ${service_host}
   deploy:
-    - host: 10.0.1.1
-    - host: 10.0.1.2
-    - host: 10.0.1.3
+    - host: server-host1
+    - host: server-host2
+    - host: server-host3
 ```
 
 #### 示例 2：在同一台主机上部署多个 chunkserver 实例
@@ -170,13 +168,13 @@ chunkserver_services:
   config:
     listen.ip: 10.0.1.1
   deploy:
-    - host: 10.0.1.1
+    - host: serevr-host1
       config:
         listen.port: 8200
-    - host: 10.0.1.1
+    - host: serevr-host2
       config:
         listen.port: 8201
-    - host: 10.0.1.1
+    - host: server-host3
       config:
         listen.port: 8202
 ```
@@ -187,9 +185,9 @@ chunkserver_services:
     listen.ip: 10.0.1.1
     listen.port: 820${service_host_sequence}
   deploy:
-    - host: 10.0.1.1
-    - host: 10.0.1.1
-    - host: 10.0.1.1
+    - host: serevr-host1
+    - host: serevr-host2
+    - host: serevr-host3
 ```
 
 #### 示例 3：自定义变量
@@ -197,30 +195,30 @@ chunkserver_services:
 ```yaml
 etcd_services:
   deploy:
-    - host: 10.0.1.1
-    - host: 10.0.1.2
-    - host: 10.0.1.3
-    
+   - host: server-host1
+   - host: server-host2
+   - host: server-host3
+
 mds_services:
  deploy:
-   - host: 10.0.1.1
-   - host: 10.0.1.2
-   - host: 10.0.1.3
+   - host: server-host1
+   - host: server-host2
+   - host: server-host3
 ```
 
 ```yaml
 global:
   variable:
-    machine1: 10.0.1.1
-    machine2: 10.0.1.2
-    machine3: 10.0.1.3
+    machine1: server-host1
+    machine2: server-host2
+    machine3: server-host3
 
 etcd_services:
   deploy:
     - host: ${machine1}
     - host: ${machine2}
     - host: ${machine3}
-    
+
 mds_services:
   deploy:
     - host: ${machine1}
@@ -228,35 +226,35 @@ mds_services:
     - host: ${machine3}
 ```
 
-### replica
+### replicas
 
-当我们需要在单台机器上部署多个同一类型的服务实例时，可利用 `replica` 副本特性来简化我们的拓扑文件：
+当我们需要在单台机器上部署多个同一类型的服务实例时，可利用 `replicas` 复制服务特性来简化我们的拓扑文件：
 
 ```yaml
 chunkserver_services:
   config:
-    listen.port: 820${service_host_sequence} 
+    listen.port: 820${service_host_sequence}
   deploy:
-    - host: 10.0.1.1
-    - host: 10.0.1.1
-    - host: 10.0.1.1
+    - host: server-host1
+    - host: server-host1
+    - host: server-host1
 ```
 
 ```yaml
 chunkserver_services:
   config:
-    listen.port: 820${service_replica_sequence}
+    listen.port: 820${service_replicas_sequence}
   deploy:
-    - host: 10.0.1.1
-      replica: 3
+    - host: server-host1
+      replicas: 3
 ```
 
-变量 `${servicce_host_sequence}`、`${service_replica_sequence}` 的值请参考上文[变量](#变量)。
+变量 `${servicce_host_sequence}`、`${service_replicas_sequence}` 的值请参考上文[变量](#变量)。
 
 CurveBS 集群拓扑
 ---
 
-CurveBS 集群拓扑文件由以下 5 个区块组成： 
+CurveBS 集群拓扑文件由以下 5 个区块组成：
 
 | 区块                   | 说明                   | 服务简介                                                                                           |
 | :---                   | :---                   | :---                                                                                               |
@@ -271,20 +269,18 @@ CurveBS 集群拓扑文件由以下 5 个区块组成：
 ```yaml
 kind: curvebs
 global:
-  user: curve
-  ssh_port: 22
-  private_key_file: /home/curve/.ssh/publish_rsa
   container_image: opencurvedocker/curvebs:v1.2
-  log_dir: /home/${user}/logs/${service_role}${service_replica_sequence}
-  data_dir: /home/${user}/data/${service_role}${service_replica_sequence}
+  log_dir: ${home}/logs/${service_role}${service_replicas_sequence}
+  data_dir: ${home}/data/${service_role}${service_replicas_sequence}
   s3.ak: <>
   s3.sk: <>
   s3.nos_address: <>
   s3.snapshot_bucket_name: <>
   variable:
-    machine1: 10.0.1.1
-    machine2: 10.0.1.2
-    machine3: 10.0.1.3
+    home: /tmp
+    machine1: server-host1
+    machine2: server-host2
+    machine3: server-host3
 
 etcd_services:
   config:
@@ -310,7 +306,7 @@ chunkserver_services:
   config:
     listen.ip: ${service_host}
     listen.port: 82${format_replica_sequence}  # 8200, 8201, 8202
-    data_dir: /data/chunkserver${service_replica_sequence}  # /data/chunkserver0, /data/chunksever1, /data/chunkserver2
+    data_dir: /data/chunkserver${service_replicas_sequence}  # /data/chunkserver0, /data/chunksever1, /data/chunkserver2
     copysets: 100
   deploy:
     - host: ${machine1}
@@ -336,27 +332,24 @@ snapshotclone_services:
 用户可根据需求自行选择，并进行编辑调整：
 
 * [单机部署][curvebs-stand-alone-topology]
- 
+
   所有服务都运行在一台主机上，一般用于体验或测试
 
 * [多机部署][curvebs-cluster-topology]
- 
+
   通用的多机部署模板，可用于生产环境或测试
 
 > :bulb: **提醒：**
-> 
+>
 > 关于拓扑文件中的配置层级及变量，详见上文：
 > * [层级](#层级)
 > * [变量](#变量)
- 
+
 ### CurveBS 重要配置项
 
 | 配置项                  | 是否必填 | 默认值                       | 说明                                                                                                                                                                                                                 |
 | :---                    | :---     | :---                         | :---                                                                                                                                                                                                                 |
 | kind                    | Y        |                              | 拓扑文件类型。必须为 `curvebs`                                                                                                                                                                                       |
-| user                    |          | $USER                        | 连接远端主机 SSH 服务的用户。该用户同样用于执行部署操作，请确保该用户拥有 sudo 权限，因为该用户将用于挂卸载文件系统、操作 docker cli 等操作                                                                          |
-| ssh_port                |          | 22                           | 远端主机 SSH 服务端口                                                                                                                                                                                                |
-| private_key_file        |          | /home/$USER/.ssh/id_rsa      | 用于连接远端主机 SSH 服务的私钥路径                                                                                                                                                                                  |
 | container_image         |          | opencurvedocker/curvebs:v1.2 | 容器镜像。默认值为我们最新稳定版本，你也可以访问 [CurveBS 公共 docker 仓库][curvebs-dockerhub]自行选择                                                                                                               |
 | report_usage            |          | true                         | 是否匿名上报用户集群使用量。开启该选项后，curveadm 会匿名上报用户集群 UUID 以及集群使用量，来帮助 curve 团队更好地了解用户及改进服务                                                                                 |
 | log_dir                 |          |                              | 保存服务日志的目录。如果不配置该选项，日志默认保存在容器内的指定目录，一旦容器被清理，日志将会随之删除                                                                                                               |
@@ -379,20 +372,14 @@ snapshotclone_services:
 >
 > CurveAdm 默认会收集集群使用量来帮助 Curve 团队更好地了解用户是如何使用它的，
 > 它会通过匿名的方式上报集群 UUID、集群类型以及集群使用量，完整的代码保存在[这里][report-script]。
-> 
+>
 > 你也可以通过编辑拓扑文件来关闭它：
 > ```yaml
 > global:
 >   report_usage: false
 > ```
- 
-> :bulb: **提醒：**
->
-> 当出现 SSH 连接问题时，你可以根据拓扑文件中的相应配置，
-> 在本地手动模拟 curveadm 的连接操作，以此来排查相应问题：
-> ```shell
-> $ ssh <user>@<host> -p <ssh_port> -i <private_key_file>
-> ``` 
+
+
 
 CurveFS 集群拓扑
 ---
@@ -411,16 +398,14 @@ CurveFS 集群拓扑文件由以下 4 个区块组成：
 ```yaml
 kind: curvefs
 global:
-  user: curve
-  ssh_port: 22
-  private_key_file: /home/curve/.ssh/id_rsa
   container_image: opencurvedocker/curvefs:latest
-  log_dir: /home/${user}/curvefs/logs/${service_role}
-  data_dir: /home/${user}/curvefs/data/${service_role}
+  log_dir: ${home}/curvefs/logs/${service_role}
+  data_dir: ${home}/curvefs/data/${service_role}
   variable:
-    machine1: 10.0.1.1
-    machine2: 10.0.1.2
-    machine3: 10.0.1.3
+    home: /tmp
+    machine1: server-host1
+    machine2: server-host2
+    machine3: server-host3
 
 etcd_services:
   config:
@@ -468,7 +453,7 @@ metaserver_services:
   通用的多机部署模板，可用于生产环境或测试
 
 > :bulb: **提醒：**
-> 
+>
 > 关于拓扑文件中的配置层级及变量，详见上文：
 > * [层级](#层级)
 > * [变量](#变量)
@@ -478,9 +463,6 @@ metaserver_services:
 | 配置项           | 是否必填 | 默认值                         | 说明                                                                                                                                 |
 | :---             | :---     | :---                           | :---                                                                                                                                 |
 | kind             | Y        |                                | 拓扑文件类型。必须为 `curvefs`                                                                                                       |
-| user             |          | $USER                          | 连接远端主机 SSH 服务的用户。该用户同样用于执行部署操作，请确保该用户拥有 sudo 权限，因为该用户将用于操作 docker cli                 |
-| ssh_port         |          | 22                             | 远端主机 SSH 服务端口                                                                                                                |
-| private_key_file |          | /home/$USER/.ssh/id_rsa        | 用于连接远端主机 SSH 服务的私钥路径                                                                                                  |
 | container_image  |          | opencurvedocker/curvefs:latest | 容器镜像。默认值为我们最新稳定版本，你也可以访问 [CurveFS 公共 docker 仓库][curvefs-dockerhub]自行选择                               |
 | report_usage     |          | true                           | 是否匿名上报用户集群使用量。开启该选项后，curveadm 会匿名上报用户集群 UUID 以及集群使用量，来帮助 curve 团队更好的了解用户及改进服务 |
 | log_dir          |          |                                | 保存服务日志的目录。如果不配置该选项，日志默认保存在容器内的指定目录，一旦容器被清理，日志将会随之删除                               |
@@ -508,14 +490,7 @@ metaserver_services:
 >   report_usage: false
 > ```
 
-> :bulb: **提醒：**
->
-> 当出现 SSH 连接问题时，你可以根据拓扑文件中的相应配置，
-> 在本地手动模拟 curveadm 的连接操作，以此来排查相应问题：
-> ```shell
-> $ ssh <user>@<host> -p <ssh_port> -i <private_key_file>
-> ``` 
-
+[hosts]: https://github.com/opencurve/curveadm/wiki/hosts
 [curvebs-mds-design]: https://github.com/opencurve/curve/blob/master/docs/cn/mds.md
 [curvebs-chunkserver-design]: https://github.com/opencurve/curve/blob/master/docs/cn/chunkserver_design.md
 [curvebs-snapshotclone-design]: https://github.com/opencurve/curve/blob/master/docs/cn/snapshotcloneserver.md

@@ -4,11 +4,12 @@
 * [第 1 步：环境准备](#第-1-步环境准备)
 * [第 2 步：在中控机上安装 CurveAdm](#第-2-步在中控机上安装-curveadm)
 * [第 3 步：部署 Minio（可选）](#第-3-步部署-minio可选)
-* [第 4 步：准备集群拓扑文件](#第-4-步准备集群拓扑文件)
-* [第 5 步：添加集群并切换集群](#第-5-步添加集群并切换集群)
-* [第 6 步：部署集群](#第-6-步部署集群)
-* [第 7 步：查看集群运行情况](#第-7-步查看集群运行情况)
-* [第 8 步：验证集群健康状态](#第-8-步验证集群健康状态)
+* [第 4 步：导入主机列表](#第-4-步导入主机列表)
+* [第 5 步：准备集群拓扑文件](#第-5-步准备集群拓扑文件)
+* [第 6 步：添加集群并切换集群](#第-6-步添加集群并切换集群)
+* [第 7 步：部署集群](#第-7-步部署集群)
+* [第 8 步：查看集群运行情况](#第-8-步查看集群运行情况)
+* [第 9 步：验证集群健康状态](#第-9-步验证集群健康状态)
 
 第 1 步：环境准备
 ---
@@ -44,13 +45,48 @@ minio/minio server /data --console-address ":9900"
 > 运行参数中的 minio-data 为本地路径，你需要在运行 minio 容器之前，提前创建这个目录
 
 > :bulb: **提醒：**
-> 
+>
 > 以下这些信息将用于 CurveFS 拓扑文件中 [S3 相关配置项][important-config]的填写：
 > * root 用户默认的 `Access Key` 以及 `Secret Key` 都为 `minioadmin`
 > * S3 服务的访问地址为 `http://$IP:9000`， 你需要通过浏览器访问 `http://$IP:9000` 来创建一个桶
 > * 关于部署的更多详细信息，你可以参考 [deploy-minio-standalone][deploy-minio-standalone]
 
-第 4 步：准备集群拓扑文件
+
+第 4 步：导入主机列表
+---
+
+用户需导入部署集群和客户端所需的机器列表，以便在之后的各类配置文件中填写部署服务的主机名，
+请确保在之后各类配置文件出现的主机名都已导入，详见[主机管理][hosts]。
+
+### 1. 准备主机列表
+
+```shell
+$ vim hosts.yaml
+```
+
+```yaml
+global:
+  user: curve
+  ssh_port: 22
+  private_key_file: /home/curve/.ssh/id_rsa
+
+hosts:
+  - host: server-host1
+    hostname: 10.0.1.1
+  - host: server-host2
+    hostname: 10.0.1.2
+  - host: server-host3
+    hostname: 10.0.1.3
+  - host: client-host
+    hostname: 10.0.1.4
+```
+
+### 2. 导入主机列表
+```shell
+$ curveadm hosts commit hosts.yaml
+```
+
+第 5 步：准备集群拓扑文件
 ---
 
 我们根据常见的场景，给用户准备了不同的拓扑文件模板，用户可根据需求自行选择，并进行编辑调整：
@@ -73,16 +109,14 @@ $ vim topology.yaml
 ```yaml
 kind: curvefs
 global:
-  user: curve
-  ssh_port: 22
-  private_key_file: /home/curve/.ssh/id_rsa
   container_image: opencurvedocker/curvefs:latest
-  log_dir: /home/${user}/curvefs/logs/${service_role}
-  data_dir: /home/${user}/curvefs/data/${service_role}
+  log_dir: ${home}/curvefs/logs/${service_role}
+  data_dir: ${home}/curvefs/data/${service_role}
   variable:
-    machine1: 10.0.1.1
-    machine2: 10.0.1.2
-    machine3: 10.0.1.3
+    home: /tmp
+    machine1: server-host1
+    machine2: server-host2
+    machine3: server-host3
 
 etcd_services:
   config:
@@ -118,7 +152,7 @@ metaserver_services:
         metaserver.loglevel: 3
 ```
 
-第 5 步：添加集群并切换集群
+第 6 步：添加集群并切换集群
 ---
 
 #### 1. 添加 'my-cluster' 集群，并指定集群拓扑文件
@@ -130,10 +164,10 @@ $ curveadm cluster add my-cluster -f topology.yaml
 #### 2. 切换 'my-cluster' 集群为当前管理集群
 
 ```shell
-$ curveadm cluster checkout my-cluster 
+$ curveadm cluster checkout my-cluster
 ```
 
-第 6 步：部署集群
+第 7 步：部署集群
 ---
 
 ```shell
@@ -142,7 +176,11 @@ $ curveadm deploy
 
 如果部署成功，将会输出类似 `Cluster 'my-cluster' successfully deployed ^_^.` 的字样。
 
-第 7 步：查看集群运行情况
+> 📢 **注意：**
+>
+> 部署时默认会运行[预检模块][precheck]来提前检测那些可能导致用户部署失败的因素，以提高用户部署的成功率，当出现预检失败时，用户需要根据报告的[错误码][errno]以及其提供的解决方案一步步排除问题, 并最终通过所有预检。当然用户也可以通过添加 `-k` 选项跳过预检，但是这是我们极其不推介的，因为这将给之后的实际部署留下隐患，并产生难以排查的问题。
+
+第 8 步：查看集群运行情况
 ---
 
 ```shell
@@ -154,27 +192,28 @@ CurveAdm 默认会显示服务 ID、服务角色、主机地址、已部署的�
 ```shell
 Get Service Status: [OK]
 
-cluster name    : my-cluster
-cluster kind    : curvefs
-cluster mds addr: 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
+cluster name      : my-cluster
+cluster kind      : curvefs
+cluster mds addr  : 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
+cluster mds leader: 10.0.1.1:6700 / 505da008b59c
 
-Id            Role           Host      Replica  Container Id  Status
---            ----           ----      -------  ------------  ------
-c9570c0d0252  etcd           10.0.1.1  1/1      ced84717bf4b  Up 45 hours
-493b7831907c  etcd           10.0.1.2  1/1      907f8b84f527  Up 45 hours
-8438cc5ecb52  etcd           10.0.1.3  1/1      44eca4798424  Up 45 hours
-505da008b59c  mds            10.0.1.1  1/1      37c05bbb39af  Up 45 hours
-e7bfb934182b  mds            10.0.1.2  1/1      044b56281928  Up 45 hours
-1b322781339c  mds            10.0.1.3  1/1      b00481b9872d  Up 45 hours
-2912bbdbcb48  metaserver     10.0.1.1  1/1      8b7a14b872ff  Up 45 hours
-b862ef6720ed  metaserver     10.0.1.2  1/1      8e2a4b9e16b4  Up 45 hours
-ed4533e903d9  metaserver     10.0.1.3  1/1      a35c30e3143d  Up 45 hours
+Id            Role        Host          Replicas  Container Id  Status
+--            ----        ----          -------   ------------  ------
+c9570c0d0252  etcd        server-host1  1/1       ced84717bf4b  Up 45 hours
+493b7831907c  etcd        server-host2  1/1       907f8b84f527  Up 45 hours
+8438cc5ecb52  etcd        server-host3  1/1       44eca4798424  Up 45 hours
+505da008b59c  mds         server-host1  1/1       37c05bbb39af  Up 45 hours
+e7bfb934182b  mds         server-host2  1/1       044b56281928  Up 45 hours
+1b322781339c  mds         server-host3  1/1       b00481b9872d  Up 45 hours
+2912bbdbcb48  metaserver  server-host1  1/1       8b7a14b872ff  Up 45 hours
+b862ef6720ed  metaserver  server-host2  1/1       8e2a4b9e16b4  Up 45 hours
+ed4533e903d9  metaserver  server-host3  1/1       a35c30e3143d  Up 45 hours
 ```
 
-* 若想查看其余信息，如日志目录、数据目录等，可添加 `-v` 参数
-* 对于同一台主机上的[副本][replicas]服务来说，其状态默认是折叠的，可添加 `-s` 参数来显示每一个副本服务
+* 若想查看其余信息，如监听端口、日志目录、数据目录等，可添加 `-v` 参数
+* 对于同一台主机上的[复制][replicas]服务来说，其状态默认是折叠的，可添加 `-s` 参数来显示每一个副本服务
 
-第 8 步：验证集群健康状态
+第 9 步：验证集群健康状态
 ---
 
 集群服务正常运行，并不意味着集群的健康，所以我们在每一个容器内内置了 `curvefs_tool` 工具。
@@ -195,8 +234,11 @@ $ curvefs_tool status
 
 [minio]: https://github.com/minio/minio
 [deploy-minio-standalone]: https://docs.min.io/minio/baremetal/installation/deploy-minio-standalone.html
+[hosts]: https://github.com/opencurve/curveadm/wiki/hosts
 [important-config]: https://github.com/opencurve/curveadm/wiki/topology#curvefs-重要配置项
 [curvefs-stand-alone-topology]: https://github.com/opencurve/curveadm/blob/master/configs/fs/stand-alone/topology.yaml
 [curvefs-cluster-topology]: https://github.com/opencurve/curveadm/blob/master/configs/fs/cluster/topology.yaml
-[curvefs-topology]: https://github.com/opencurve/curveadm/wiki/topology#curvefs-集群拓扑 
-[replicas]: https://github.com/opencurve/curveadm/wiki/topology#replica 
+[curvefs-topology]: https://github.com/opencurve/curveadm/wiki/topology#curvefs-集群拓扑
+[precheck]: https://github.com/opencurve/curveadm/wiki/precheck
+[errno]: https://github.com/opencurve/curveadm/wiki/errno
+[replicas]: https://github.com/opencurve/curveadm/wiki/topology#replica
