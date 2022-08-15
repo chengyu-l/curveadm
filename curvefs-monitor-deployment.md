@@ -106,7 +106,7 @@ sudo bash curve-monitor.sh start
 
 ```bash
 # 请将 opencurvedocker/curvefs:v1.2 更换为自己部署的镜像
-docker run --network host -d -v /etc/curvefs/monitor/prometheus:/curvefs/monitor/prometheus -v /etc/curvefs/:/etc/curvefs/ opencurvedocker/curvefs:v1.2 entrypoint.sh --role=monitor
+docker run --network host -d -v /etc/curvefs/monitor/prometheus:/curvefs/monitor/prometheus -v /etc/curvefs/:/etc/curvefs/ opencurvedocker/curvefs:v1.2-monitor entrypoint.sh --role=monitor
 ```
 
 该服务更新容器内的 /curvefs/monitor/prometheus/target.json 文件，而 prometheus 需要读取该文件，从而抓去相应服务的监控数据。
