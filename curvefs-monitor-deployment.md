@@ -73,12 +73,12 @@ prometheus target.json 文件的生成依赖于工具 curvefs_tool, 工具的运
   ```bash
   docker ps
 
-  CONTAINER ID   IMAGE                          COMMAND                  CREATED       STATUS       PORTS     NAMES
-  ae677e3c4b74   opencurvedocker/curvefs:v1.2   "/entrypoint.sh --ro…"   3 hours ago   Up 3 hours             curvebs-chunkserver-8487da64a304
-  43ba681f26f3   opencurvedocker/curvefs:v1.2   "/entrypoint.sh --ro…"   3 hours ago   Up 3 hours             curvebs-chunkserver-9bdcf13f6ec6
-  67a7d64e5fbf   opencurvedocker/curvefs:v1.2   "/entrypoint.sh --ro…"   3 hours ago   Up 3 hours             curvebs-etcd-684a906fc55a
-  93e98310e1a1   opencurvedocker/curvefs:v1.2   "/entrypoint.sh --ro…"   3 hours ago   Up 3 hours             curvebs-chunkserver-addd8d9120f9
-  0bc77e13d604   opencurvedocker/curvefs:v1.2   "/entrypoint.sh --ro…"   3 hours ago   Up 3 hours             curvebs-mds-6b7274e16dca
+  CONTAINER ID   IMAGE                                  COMMAND                  CREATED       STATUS       PORTS     NAMES
+  ae677e3c4b74   opencurvedocker/curvefs:v1.2-monitor   "/entrypoint.sh --ro…"   3 hours ago   Up 3 hours             curvebs-chunkserver-8487da64a304
+  43ba681f26f3   opencurvedocker/curvefs:v1.2-monitor   "/entrypoint.sh --ro…"   3 hours ago   Up 3 hours             curvebs-chunkserver-9bdcf13f6ec6
+  67a7d64e5fbf   opencurvedocker/curvefs:v1.2-monitor   "/entrypoint.sh --ro…"   3 hours ago   Up 3 hours             curvebs-etcd-684a906fc55a
+  93e98310e1a1   opencurvedocker/curvefs:v1.2-monitor   "/entrypoint.sh --ro…"   3 hours ago   Up 3 hours             curvebs-chunkserver-addd8d9120f9
+  0bc77e13d604   opencurvedocker/curvefs:v1.2-monitor   "/entrypoint.sh --ro…"   3 hours ago   Up 3 hours             curvebs-mds-6b7274e16dca
   ```
 
 使用 `docker cp` 从镜像中复制配置文件到本地（注意替换 container id）：
@@ -113,7 +113,7 @@ docker run --network host -d -v /etc/curvefs/monitor/prometheus:/curvefs/monitor
 因此需要将 /etc/curvefs/monitor/prometheus 映射到 /curvefs/monitor/prometheus。
 
 **注意**：
-更新 target.json 镜像（本文中为 opencurvedocker/curvefs:v1.2，请更换为自己的镜像）尽量以所部署的镜像为准，较老的镜像可能不支持相关服务，使用命令 `docker logs $(CONTAINER ID)` (CONTAINER ID 为`docker run -d`的输出) 会出现下列提示，请联系开发者。
+更新 target.json 镜像（本文中为 opencurvedocker/curvefs:v1.2-monitor，请更换为自己的镜像）尽量以所部署的镜像为准，较老的镜像可能不支持相关服务，使用命令 `docker logs $(CONTAINER ID)` (CONTAINER ID 为`docker run -d`的输出) 会出现下列提示，请联系开发者。
 
 ```bash
 Usage:
