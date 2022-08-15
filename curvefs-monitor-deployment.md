@@ -66,7 +66,7 @@ prometheus 会保存数据到 /etc/curvefs/monitor/prometheus/data 目录，请�
 第 2 步：准备配置文件
 ---
 
-prometheus target.json 文件的生成依赖于工具 curve_ops_tool, 工具的运行需要配置文件 /etc/curve/tools.conf 。
+prometheus target.json 文件的生成依赖于工具 curvefs_tool, 工具的运行需要配置文件 /etc/curvefs/tools.conf 。
 该配置文件可以从 curveadm 部署的 docker 容器中获取。
 在运行 curvefs（mds、metaserver）的机器上使用一下命令获取容器id（如：ae677e3c4b74）：
   
