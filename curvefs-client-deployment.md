@@ -55,6 +55,7 @@ $ vim client.yaml
 ```
 
 ```shell
+kind: curvefs
 s3.ak: <>
 s3.sk: <>
 s3.endpoint: <>

@@ -56,6 +56,7 @@ $ vim client.yaml
 ```
 
 ```shell
+kind: curvebs
 container_image: opencurvedocker/curvebs:v1.2
 mds.listen.addr: 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
 log_dir: /home/curve/curvebs/logs/client
