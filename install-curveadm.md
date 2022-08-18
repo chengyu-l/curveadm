@@ -12,7 +12,7 @@ Linux 操作系统版本需求
 
 > 📢 **注意：**
 >
-> CurveBS 客户端依赖内核 nbd 模块，若当前内核不提供 nbd 模块，用户需自行编译并导入
+> CurveBS 客户端依赖内核 nbd 模块（仅curveadm map命令及K8S CSI会使用nbd模块，如果使用iSCSI客户端或者自行编译QEMU对接CurveBS则不依赖nbd模块），若当前内核不提供 nbd 模块，用户需自行编译并导入
 
 网络需求
 ---
