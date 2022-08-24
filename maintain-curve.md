@@ -443,4 +443,4 @@ $ curveadm support --client 462d538778ad
 > 当数据上传成功后，终端会显示相应的秘钥，请将该秘钥[告诉 Curve 团队成员][support]，以供他们分析及排查问题。
 
 [support]: https://github.com/opencurve/curveadm/wiki/others#%E9%97%AE%E9%A2%98%E4%B8%8E%E5%8F%8D%E9%A6%88
-[replicas]: https://github.com/opencurve/curveadm/wiki/topology#replica
+[replicas]: https://github.com/opencurve/curveadm/wiki/topology#replicas
