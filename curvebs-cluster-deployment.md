@@ -88,7 +88,6 @@ disk:
 > :warning: **警告：**
 >
 > * 请确保以上磁盘列表中的磁盘只用于 chunkserver 服务，针对每块磁盘，我们都将重新格式化成 `ext4` 文件系统，盘上的数据将全部被擦除。
-> * 为防止机器重启后磁盘对应的挂载点丢失，用户可将挂载点添加到 [fstab][fstab] 中去。
 
 ### 2. 开始格式化
 
@@ -284,4 +283,3 @@ $ curve_ops_tool status
 [precheck]: https://github.com/opencurve/curveadm/wiki/precheck
 [errno]: https://github.com/opencurve/curveadm/wiki/errno
 [replicas]: https://github.com/opencurve/curveadm/wiki/topology#replicas
-[fstab]: https://wiki.archlinux.org/title/Fstab_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)

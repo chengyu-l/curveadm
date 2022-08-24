@@ -129,9 +129,9 @@ Get Client Status: [OK]
 
 Id            Kind     Host          Container Id  Status       Aux Info
 --            ----     ----          ------------  ------       --------
-462d538778ad  curvefs  server-host1  dfa00fd01ae8  Up 36 hours  {"fsname":"/test1","mount_point":"/mnt/test1"}
-c0d56cfaad14  curvefs  server-host2  c1301eff2af0  Up 36 hours  {"fsname":"/test2","mount_point":"/mnt/test2"}
-d700e1f6acab  curvefs  server-host3  62554173a54f  Up 36 hours  {"fsname":"/test3","mount_point":"/mnt/test3"}
+462d538778ad  curvefs  client-host1  dfa00fd01ae8  Up 36 hours  {"fsname":"/test1","mount_point":"/mnt/test1"}
+c0d56cfaad14  curvefs  client-host2  c1301eff2af0  Up 36 hours  {"fsname":"/test2","mount_point":"/mnt/test2"}
+d700e1f6acab  curvefs  client-host3  62554173a54f  Up 36 hours  {"fsname":"/test3","mount_point":"/mnt/test3"}
 ```
 
 > 📢 **注意：**

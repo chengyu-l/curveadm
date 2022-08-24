@@ -26,9 +26,61 @@ How to Solve:
  * 子类：次要错误类型
  * 错误码：具体的错误码序列号
 
-<img src="image/errno.jpg" width="60%" height="22%">
+<img src="image/errno.jpg" width="45%" height="22%">
 
-#### 查看错误码列表
+### 主类
+
+| 主类 | 类别说明                                                       | 通用解决方法                                                                                                                                                                                                                                                             |
+| :--- | :---                                                           | :---                                                                                                                                                                                                                                                                     |
+| 0    | **初始化**相关，如创建 CurveAdm 必要的目录失败                 | 这类错误只包含 3 个错误码，基本不会被报告，一般跟当前中控机的系统环境有关，用户可根据错误线索和错误码解决方案来排查即可                                                                                                                                                  |
+| 1    | **数据库**相关，如 SQLite 数据库初始化失败、执行 SQL 语句失败  | 数据库相关错误只会在 CurveAdm 版本和已存在数据库文件不兼容、CurveAdm 代码逻辑出现漏洞的情况下才会被报告，遇到这类错误，如果是已经部署了重要集群的用户，我们建议立马停止手头的操作，并联系 Curve 团队的小伙伴进行排查，以免污染数据库，否则可重新安装最新版 CurveAdm 即可 |
+| 2    | **命令行参数**相关，如用户输入的命令行参数值为无效值           | 用户需根据错误线索和错误码解决方案调整命令行参数，确保其有效且正确后重新执行相关命令即可                                                                                                                                                                                 |
+| 3    | **配置文件**相关，如解析配置文件失败、配置文件中的值不符合要求 | 用户需根据错误线索和错误码解决方案调整相应的配置文件，确保其有效且正确后重新执行相关操作即可                                                                                                                                                                             |
+| 4    | **通用逻辑**相关，如未找到主机、未找到集群等等                 | 这类错误简单明了，用户根据错误线索和错误码解决方案解决即可                                                                                                                                                                                                               |
+| 5    | **预检**相关，如拓扑文件预检失败、内核预检失败、网络预检失败等 | 预检是成功部署的必要条件，我们对每一个预检错误码都提供了详细的解决方案，用户需根据这些解决方案一一排除预检失败项，确保通过所有预检项                                                                                                                                     |
+| 6    | **命令执行**相关，如执行shell 命令、docker 命令失败            | 由于命令执行的失败涉及过多种情况，我们在这里就不一一列举了，用户可根据错误线索和查看对应的日志来确定具体的错误，并进行排查。这类错误大多数跟系统环境相关                                                                                                                 |
+| 9    | **未知错误**                                                   | 这类错误属于错误逃逸，表明错误没有被 CurveAdm 捕获到，用户可提交 issue 或添加微信群报告该错误，来帮助 CurveAdm 变得更好                                                                                                                                                  |
+
+### 子类
+
+| 主类 | 主类说明       | 子类 | 子类说明                                             |
+| :--- | :---           | :--- | :---                                                 |
+| `0`  | **初始化**     | `0*` | 初始化 CurveAdm                                      |
+| `1`  | **数据库**     | `0*` | SQLite 数据库初始化失败                              |
+|      |                | `1*` | 执行 SQL 语句失败                                    |
+| `2`  | **命令行参数** | `0*` | 主机命令相关参数                                     |
+|      |                | `1*` | 服务/集群命令相关参数                                |
+|      |                | `2*` | 客户端命令相关参数                                   |
+| `3`  | **配置文件**   | `0*` | 配置文件通用                                         |
+|      |                | `1*` | CurveAdm 配置文件相关，即 *~/.curveadm/curveadm.cfg* |
+|      |                | `2*` | 主机配置文件相关，即 *hosts.yaml*                    |
+|      |                | `3*` | 集群拓扑文件相关，即 *topology.yaml*                 |
+|      |                | `4*` | 格式化配置文件相关，即 *format.yaml*                 |
+|      |                | `5*` | 客户端配置文件相关，即 *client.yaml*                 |
+| `4`  | **通用逻辑**   | `0*` | 主机相关逻辑                                         |
+|      |                | `1*` | 服务相关逻辑                                         |
+|      |                | `2*` | CurveBS 客户端相关逻辑                               |
+|      |                | `3*` | CurveFS 客户端相关逻辑                               |
+|      |                | `4*` | PolarFS 相关逻辑                                     |
+|      |                | `5*` | playground 相关逻辑                                  |
+| `5`  | **预检**       | `0*` | 拓扑文件预检项 *<topology\>*                         |
+|      |                | `1*` | SSH 预检项 *<ssh\>*                                  |
+|      |                | `2*` | 权限预检项 *<permission\>*                           |
+|      |                | `3*` | 内核预检项 *<kernel\>*                               |
+|      |                | `4*` | 网络预检项 *<network\>*                              |
+|      |                | `5*` | 时间预检项 *<date\>*                                 |
+|      |                | `6*` | 服务预检项 *<service\>*                              |
+|      |                | `7*` | 客户端预检项                                         |
+|      |                | `9*` | 其他预检项                                           |
+| `6`  | **命令执行**   | `0*` | 命令执行通用                                         |
+|      |                | `1*` | SSH 命令执行相关                                     |
+|      |                | `2*` | shell 命令执行相关                                   |
+|      |                | `3*` | docker 命令执行相关                                  |
+|      |                | `4*` | 文件相关                                             |
+|      |                | `9*` | 其他                                                 |
+| `9`  | **其他**       | `*`  | 其他                                                 |
+
+### 查看错误码列表
 
 ```shell
 $ curveadm -d
@@ -64,4 +116,3309 @@ $ curveadm -d
 错误码列表
 ---
 
-> :hourglass_flowing_sand: 错误码解释及解决方案正在编写中，将在近期发布
+* [000001](#000001)
+* [000002](#000002)
+* [000003](#000003)
+* [100000](#100000)
+* [110000](#110000)
+* [110001](#110001)
+* [111000](#111000)
+* [111001](#111001)
+* [111002](#111002)
+* [111003](#111003)
+* [111004](#111004)
+* [111005](#111005)
+* [111006](#111006)
+* [111007](#111007)
+* [112000](#112000)
+* [112001](#112001)
+* [112002](#112002)
+* [112003](#112003)
+* [113000](#113000)
+* [113001](#113001)
+* [113002](#113002)
+* [113003](#113003)
+* [113004](#113004)
+* [114000](#114000)
+* [114001](#114001)
+* [114002](#114002)
+* [114003](#114003)
+* [115000](#115000)
+* [210000](#210000)
+* [210001](#210001)
+* [210002](#210002)
+* [210003](#210003)
+* [210004](#210004)
+* [210005](#210005)
+* [210006](#210006)
+* [220000](#220000)
+* [221000](#221000)
+* [221001](#221001)
+* [221002](#221002)
+* [221003](#221003)
+* [221004](#221004)
+* [221005](#221005)
+* [221006](#221006)
+* [221007](#221007)
+* [222000](#222000)
+* [230000](#230000)
+* [230001](#230001)
+* [230002](#230002)
+* [230003](#230003)
+* [301000](#301000)
+* [301002](#301002)
+* [301003](#301003)
+* [301004](#301004)
+* [301005](#301005)
+* [301006](#301006)
+* [301100](#301100)
+* [301101](#301101)
+* [310000](#310000)
+* [311000](#311000)
+* [311001](#311001)
+* [320000](#320000)
+* [320001](#320001)
+* [320002](#320002)
+* [320003](#320003)
+* [321000](#321000)
+* [321001](#321001)
+* [321002](#321002)
+* [321003](#321003)
+* [321004](#321004)
+* [321005](#321005)
+* [321006](#321006)
+* [321007](#321007)
+* [321008](#321008)
+* [330000](#330000)
+* [330001](#330001)
+* [330002](#330002)
+* [330003](#330003)
+* [330004](#330004)
+* [330005](#330005)
+* [330006](#330006)
+* [330007](#330007)
+* [330008](#330008)
+* [331000](#331000)
+* [331001](#331001)
+* [331002](#331002)
+* [331003](#331003)
+* [331004](#331004)
+* [332000](#332000)
+* [332001](#332001)
+* [332002](#332002)
+* [332003](#332003)
+* [332004](#332004)
+* [332005](#332005)
+* [332006](#332006)
+* [332007](#332007)
+* [332008](#332008)
+* [332009](#332009)
+* [332010](#332010)
+* [332011](#332011)
+* [340000](#340000)
+* [340001](#340001)
+* [341000](#341000)
+* [341001](#341001)
+* [341002](#341002)
+* [341003](#341003)
+* [341004](#341004)
+* [350000](#350000)
+* [350001](#350001)
+* [351000](#351000)
+* [351001](#351001)
+* [351002](#351002)
+* [351003](#351003)
+* [351004](#351004)
+* [400000](#400000)
+* [410001](#410001)
+* [410002](#410002)
+* [410003](#410003)
+* [410004](#410004)
+* [410005](#410005)
+* [410006](#410006)
+* [410007](#410007)
+* [410008](#410008)
+* [410009](#410009)
+* [410010](#410010)
+* [410011](#410011)
+* [410012](#410012)
+* [410013](#410013)
+* [410014](#410014)
+* [410015](#410015)
+* [410016](#410016)
+* [410017](#410017)
+* [410018](#410018)
+* [410019](#410019)
+* [410020](#410020)
+* [410021](#410021)
+* [410022](#410022)
+* [420000](#420000)
+* [420001](#420001)
+* [420002](#420002)
+* [420003](#420003)
+* [420004](#420004)
+* [420005](#420005)
+* [420006](#420006)
+* [420007](#420007)
+* [420008](#420008)
+* [430000](#430000)
+* [430001](#430001)
+* [430002](#430002)
+* [430003](#430003)
+* [440000](#440000)
+* [440001](#440001)
+* [440002](#440002)
+* [450000](#450000)
+* [500000](#500000)
+* [500001](#500001)
+* [500002](#500002)
+* [500003](#500003)
+* [501000](#501000)
+* [501001](#501001)
+* [502000](#502000)
+* [503000](#503000)
+* [503001](#503001)
+* [503002](#503002)
+* [503003](#503003)
+* [503004](#503004)
+* [503005](#503005)
+* [503006](#503006)
+* [503007](#503007)
+* [503008](#503008)
+* [503009](#503009)
+* [510000](#510000)
+* [520000](#520000)
+* [520001](#520001)
+* [520002](#520002)
+* [520003](#520003)
+* [530000](#530000)
+* [530001](#530001)
+* [530002](#530002)
+* [530003](#530003)
+* [540000](#540000)
+* [540001](#540001)
+* [540002](#540002)
+* [550000](#550000)
+* [550001](#550001)
+* [560000](#560000)
+* [570000](#570000)
+* [570001](#570001)
+* [570002](#570002)
+* [570003](#570003)
+* [590000](#590000)
+* [590001](#590001)
+* [590002](#590002)
+* [600000](#600000)
+* [600001](#600001)
+* [600002](#600002)
+* [600003](#600003)
+* [600004](#600004)
+* [610000](#610000)
+* [610001](#610001)
+* [610002](#610002)
+* [620000](#620000)
+* [620001](#620001)
+* [620002](#620002)
+* [620003](#620003)
+* [620004](#620004)
+* [620005](#620005)
+* [620006](#620006)
+* [620007](#620007)
+* [620008](#620008)
+* [620009](#620009)
+* [620010](#620010)
+* [620011](#620011)
+* [620012](#620012)
+* [620013](#620013)
+* [620014](#620014)
+* [620015](#620015)
+* [620016](#620016)
+* [620017](#620017)
+* [620018](#620018)
+* [620019](#620019)
+* [620020](#620020)
+* [620021](#620021)
+* [620022](#620022)
+* [620023](#620023)
+* [620024](#620024)
+* [620025](#620025)
+* [620026](#620026)
+* [620998](#620998)
+* [620999](#620999)
+* [630000](#630000)
+* [630001](#630001)
+* [630002](#630002)
+* [630003](#630003)
+* [630004](#630004)
+* [630005](#630005)
+* [630006](#630006)
+* [630007](#630007)
+* [630008](#630008)
+* [630009](#630009)
+* [630010](#630010)
+* [630011](#630011)
+* [630012](#630012)
+* [630013](#630013)
+* [690000](#690000)
+* [900000](#900000)
+* [999999](#999999)
+
+## 000001
+
+**类别：** [初始化][init]
+
+**描述：** 获取用户主目录失败
+
+**如何解决：**
+
+## 000002
+
+**类别：** [初始化][init]
+
+**描述：** 创建 `CurveAdm` 项目子目录失败
+
+**如何解决：**
+
+## 000003
+
+**类别：** [初始化][init]
+
+**描述：** 初始化日志模块失败
+
+**如何解决：**
+
+## 100000
+
+**类别：** [数据库][database]
+
+**描述：** 初始化 SQLite 数据库失败
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 110000
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：获取主机
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 110001
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：更新主机
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 111000
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：插入集群
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 111001
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：获取当前集群
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 111002
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败： 根据集群名获取集群
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 111003
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：获取所有集群
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 111004
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：切换当前集群
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 111005
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：删除集群
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 111006
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：更新集群拓扑
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 111007
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：更新集群逻辑池
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 112000
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：插入服务对应的容器 ID
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 112001
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：设置服务对应的容器 ID
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 112002
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：获取服务对应的容器 ID
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 112003
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：获取所有服务对应的容器 ID
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 113000
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：插入客户端
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 113001
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：获取客户端对应的容器 ID
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 113002
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：根据客户端 ID 获取客户端
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 113003
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：获取所有客户端
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+## 113004
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：删除客户端
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 114000
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：插入 playground
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 114001
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：获取所有 playground
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 114002
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：根据 playground 名字获取 playground
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 114003
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：删除 playground
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 115000
+
+**类别：** [数据库][database]
+
+**描述：** 执行以下 SQL 语句失败：获取所有设计日志
+
+**如何解决：** 详见数据库类错误码[通用解决方法][database-common-solution]
+
+## 210000
+
+**类别：** [命令行选项][command-options]、[服务选项][cluster-options]
+
+**描述：** 未找到 ID 对应的服务
+
+**如何解决：** 服务 ID 可通过 `curveadm status` 命令来查看，该命令显示的第一列即为服务 ID：
+
+```shell
+$ curveadm status
+```
+
+```shell
+Get Service Status: [OK]
+
+cluster name      : my-cluster
+cluster kind      : curvefs
+cluster mds addr  : 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
+cluster mds leader: 10.0.1.1:6700 / 505da008b59c
+
+Id            Role        Host          Replicas  Container Id  Status
+--            ----        ----          -------   ------------  ------
+c9570c0d0252  etcd        server-host1  1/1       ced84717bf4b  Up 45 hours
+493b7831907c  etcd        server-host2  1/1       907f8b84f527  Up 45 hours
+8438cc5ecb52  etcd        server-host3  1/1       44eca4798424  Up 45 hours
+505da008b59c  mds         server-host1  1/1       37c05bbb39af  Up 45 hours
+e7bfb934182b  mds         server-host2  1/1       044b56281928  Up 45 hours
+1b322781339c  mds         server-host3  1/1       b00481b9872d  Up 45 hours
+2912bbdbcb48  metaserver  server-host1  1/1       8b7a14b872ff  Up 45 hours
+b862ef6720ed  metaserver  server-host2  1/1       8e2a4b9e16b4  Up 45 hours
+ed4533e903d9  metaserver  server-host3  1/1       a35c30e3143d  Up 45 hours
+```
+
+## 210001
+
+**类别：** [命令行选项][command-options]、[服务选项][cluster-options]
+
+**描述：** 不支持的 CurveBS 服务角色
+
+**如何解决：** CurveBS 目前支持的服务角色仅为以下 4 个：`etcd`、`mds`、`metaserver`、`snapshotclone`。
+请确保在需要输入服务角色的命令选项中填写上述服务角色中的一个，用户也可以使用 `help` 命令来查看相应命令的帮助提示信息。
+
+## 210002
+
+**类别：** [命令行选项][command-options]、[服务选项][cluster-options]
+
+**描述：** 不支持的 CurveFS 服务角色
+
+**如何解决：** CurveFS 目前支持的服务角色为以下 3 个：`etcd`、`mds`、`metaserver`。
+请确保在需要输入服务角色的命令选项中填写上述服务角色中的一个，用户也可以使用 `help` 命令来查看相应命令的帮助提示信息。
+
+## 210003
+
+**类别：** [命令行选项][command-options]、[服务选项][cluster-options]
+
+**描述：** 不支持跳过的服务角色
+
+**如何解决：** 目前支持跳过的服务（即不部署该服务）仅为快照克隆服务，因为其他服务都为必须服务。当用户不需要使用快照克隆服务时，在部署时可添加该选项来跳过对其的部署：
+
+```shell
+$ curveadm deploy --skip snapshotclone
+```
+
+## 210004
+
+**类别：** [命令行选项][command-options]、[服务选项][cluster-options]
+
+**描述：** 不支持跳过的预检项
+
+**如何解决：** 目前支持的预检项为以下 7 个，用户可选择相应的预检项跳过：
+
+| 检查项 | 跳过选项   | 说明                                          |
+| :---   | :---       | :---                                          |
+| 拓扑   | topology   | 检查集群拓扑的合法性                          |
+| SSH    | ssh        | 检查 SSH 的连通性                             |
+| 权限   | permission | 检查当前用户执行 docker、创建目录等权限       |
+| 内核   | kernel     | 检查内核版本、内核模块是否满足要求            |
+| 网络   | network    | 检查网络连通性、防火墙等                      |
+| 时间   | date       | 检查主机之间的时间差是否过大                  |
+| 服务   | service    | 检查服务数量、chunkfile pool、S3 配置有效性等 |
+
+详见[部署预检][precheck]
+
+示例：
+
+```shell
+$ curveadm precheck --skip topology
+```
+
+## 210005
+
+**类别：** [命令行选项][command-options]、[服务选项][cluster-options]
+
+**描述：** 不支持的清理对象
+
+**如何解决：** 目前支持的清理对象为以下 3 个：
+
+| 清理对象 | 说明 |
+| :--- | :--- |
+| log | 日志目录 |
+| data | 数据目录 |
+| container | 容器 |
+
+详见[清理集群][clean]
+
+示例：
+
+```shell
+$ cuvreadm clean --only log,data
+```
+
+## 210006
+
+**类别：** [命令行选项][command-options]、[服务选项][cluster-options]
+
+**描述：** 没有匹配的服务
+
+**如何解决：** 在用户指定服务 ID、服务主机、服务角色等限定条件后，CurveAdm 未找到任何一个匹配的服务。用户可通过 `curveadm status` 命令来查看各服务的属性，并指定正确的限制属性：
+
+```shell
+$ curveadm status
+```
+
+```shell
+Get Service Status: [OK]
+
+cluster name      : my-cluster
+cluster kind      : curvefs
+cluster mds addr  : 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
+cluster mds leader: 10.0.1.1:6700 / 505da008b59c
+
+Id            Role        Host          Replicas  Container Id  Status
+--            ----        ----          -------   ------------  ------
+c9570c0d0252  etcd        server-host1  1/1       ced84717bf4b  Up 45 hours
+493b7831907c  etcd        server-host2  1/1       907f8b84f527  Up 45 hours
+8438cc5ecb52  etcd        server-host3  1/1       44eca4798424  Up 45 hours
+505da008b59c  mds         server-host1  1/1       37c05bbb39af  Up 45 hours
+e7bfb934182b  mds         server-host2  1/1       044b56281928  Up 45 hours
+1b322781339c  mds         server-host3  1/1       b00481b9872d  Up 45 hours
+2912bbdbcb48  metaserver  server-host1  1/1       8b7a14b872ff  Up 45 hours
+b862ef6720ed  metaserver  server-host2  1/1       8e2a4b9e16b4  Up 45 hours
+ed4533e903d9  metaserver  server-host3  1/1       a35c30e3143d  Up 45 hours
+```
+
+错误示例:
+
+```shell
+$ curveadm stop --id c9570c0d0252 --role mds
+```
+
+用户在 `stop` 服务时指定了服务的 ID 为 `c9570c0d0252`，同时又指定了服务的角色为 `mds`，而我们从以上集群状态显示来看，ID 为 `c9570c0d0252` 服务对应的角色为 `etcd`，所以 CurveAdm 无法找到同时满足以上 2 个条件的服务，遂报告了该错误码。
+
+## 220000
+
+**类别：** [命令行选项][command-options]、[客户端通用选项][client-common-options]
+
+**描述：** 不支持的客户端类型
+
+**如何解决：** 目前支持的客户端类型为以下 2 个：`curvebs`、`curvefs`
+
+## 221000
+
+**类别：** [命令行选项][command-options]、[CurveBS 客户端选项][curvebs-client-options]
+
+**描述：** 无效的卷格式
+
+**如何解决：** 一个有效的卷由卷所属用户和卷名两部分组成，并以 `:` 作为间隔符分隔开, 详见[映射 CurveBS 卷][map]
+
+示例：
+
+```shell
+$ curveadm map user:/volume --host client-host --create  # 正确，卷为 user:/volume
+$ curveadm map user: --host client-host --create         # 错误，缺少卷名
+$ curveadm map :/volume --host client-host --create      # 错误，缺少卷所属用户
+```
+
+## 221001
+
+**类别：** [命令行选项][command-options]、[CurveBS 客户端选项][curvebs-client-options]
+
+**描述：** `root` 不能作为卷的所属用户
+
+**如何解决：** `root` 用户作为特殊用户已被 CurveBS 使用，所以用户在挂载卷的时候不能以 `root` 用户作为卷的所属用户。用户可指定任意用户作为卷的所属用户，**特别需要注意**的是，该用户不需要在当前主机上真实存在，卷的所属用户是 CurveBS 的一个逻辑概念，表明该卷由谁创建，详见[映射 CurveBS 卷][map]
+
+
+示例：
+
+```shell
+$ curveadm map root:/volume --host client-host --create   # 错误，root 不能作为卷的所属用户
+$ curveadm map curve:/volume --host client-host --create  # 正确
+$ curveadm map test:/volume --host client-host --create   # 正确
+```
+
+
+## 221002
+
+**类别：** [命令行选项][command-options]、[CurveBS 客户端选项][curvebs-client-options]
+
+**描述：** 卷名必须以 `/` 为起始
+
+**如何解决：** 目前 CurveBS 的卷名必须以 `/` 为起始，如 `/test`，`/volume`，详见[映射 CurveBS 卷][map]
+
+示例：
+
+```shell
+$ curveadm map curve:/volume --host client-host --create  # 正确，/volume 可以作为卷名
+$ curveadm map curve:volume --host client-host --create   # 错误，volume 不能作为卷名
+```
+
+## 221003
+
+**类别：** [命令行选项][command-options]、[CurveBS 客户端选项][curvebs-client-options]
+
+**描述：** 卷大小必须以 `GB` 为结尾
+
+**如何解决：** 目前 CurveBS 的卷大小必须以 `GB` 为结尾，如 `10GB`，`1024GB`，详见[映射 CurveBS 卷][map]
+
+示例：
+
+```shell
+$ curveadm map curve:/volume --host client-host --create --size 10GB  # 正确，10GB 为有效卷大小
+$ curveadm map curve:/volume --host client-host --create --size 10    # 错误，10 为无效卷大小
+```
+
+## 221004
+
+**类别：** [命令行选项][command-options]、[CurveBS 客户端选项][curvebs-client-options]
+
+**描述：** 卷大小必须为正整数
+
+**如何解决：** 请确保以正整数来指定卷的大小，详见[映射 CurveBS 卷][map]
+
+示例：
+
+```shell
+$ curveadm map curve:/volume --host client-host --create --size 10GB   # 正确，10GB 为有效卷大小
+$ curveadm map curve:/volume --host client-host --create --size -10GB  # 错误，-10GB 为无效卷大小
+```
+
+## 221005
+
+**类别：** [命令行选项][command-options]、[CurveBS 客户端选项][curvebs-client-options]
+
+**描述：** 卷大小必须 10GB 的整数倍
+
+**如何解决：** 目前卷大小只支持以 10GB 为最小单位，即创建的卷大小只能是 10GB、20GB、30GB...，依此类推，详见[映射 CurveBS 卷][map]
+
+示例：
+
+```shell
+$ curveadm map curve:/volume --host client-host --create --size 10GB    # 正确，10GB 为有效卷大小
+$ curveadm map curve:/volume --host client-host --create --size 1024GB  # 正确，1024GB 为有效卷大小
+$ curveadm map curve:/volume --host client-host --create --size 15GB    # 错误，15GB 为无效卷大小
+$ curveadm map curve:/volume --host client-host --create --size 5GB     # 错误，5GB 为无效卷大小
+```
+
+## 221006
+
+**类别：** [命令行选项][command-options]、[CurveBS 客户端选项][curvebs-client-options]
+
+**描述：**  客户端配置文件不存在
+
+**如何解决：** 映射 CurveBS 卷时需要指定客户端配置文件，用户可通过 `-c` 选项指定配置文件，若用户未指定，CurveAdm 默认会以当前目录下的 `client.yaml` 作为客户端配置文件。
+
+示例：
+
+```shell
+$  curveadm map user:/volume --host client-host -c /path/to/client.yaml
+```
+
+## 221007
+
+**类别：** [命令行选项][command-options]、[CurveBS 客户端选项][curvebs-client-options]
+
+**描述：**  未找到 ID 对应的客户端
+
+**如何解决：** 客户端 ID 可通过 `curveadm client status` 命令来查看，该命令显示的第一列即为客户端 ID：
+
+```shell
+$ curveadm client status
+```
+
+```shell
+Get Client Status: [OK]
+
+Id            Kind     Host          Container Id  Status       Aux Info
+--            ----     ----          ------------  ------       --------
+362d538778ad  curvebs  client-host1  cfa00fd01ae8  Up 36 hours  {"user":"curve","volume":"/test1"}
+b0d56cfaad14  curvebs  client-host2  c0301eff2af0  Up 36 hours  {"user":"curve","volume":"/test2"}
+c700e1f6acab  curvebs  client-host3  52554173a54f  Up 36 hours  {"user":"curve","volume":"/test3"}
+```
+
+示例：
+
+```shell
+$ curveadm client enter 362d538778ad
+```
+
+## 220000
+
+**类别：** [命令行选项][command-options]、[CurveFS 客户端选项][curvefs-client-options]
+
+**描述：**  CurveFS 文件系统的挂载点必须为绝对路径
+
+**如何解决：**  在挂载 CurveFS 文件系统时，指定的挂载点必须要求为绝对路径，详见[挂载 CurveFS 文件系统][mount]
+
+示例：
+
+```shell
+$ curveadm curveadm mount /fs1 /mnt/test1 --host client-host  # 正确，/mnt/test1 为绝对路径
+$ curveadm curveadm mount /fs1 test1 --host client-host       # 错误，test1 为相对路径
+```
+
+## 230000
+
+**类别：** [命令行选项][command-options]、[playground 选项][playground-options]
+
+**描述：** 不支持的 playground 类型
+
+**如何解决：** 目前支持的 playground 类型为以下 2 个：`curvebs`、`curvefs`，用户需要在运行 playground 时通过 `--kind` 选项指定对应的类型
+
+示例：
+```shell
+$ curveadm playground run --kind curvebs                              # 正确，运行一个 CurveBS 的 playground
+$ curveadm playground run --kind curvefs --mountpoint /path/to/mount  # 正确，运行一个 CurveFS 的 playground，并制定对应的挂载点
+$ curveadm playground run                                             # 错误，未指定 playground 类型
+```
+
+## 230001
+
+**类别：** [命令行选项][command-options]、[playground 选项][playground-options]
+
+**描述：** 对于 CurveFS 类型的 playground，必须指定对应的挂载点
+
+**如何解决：** 当运行 CurveFS 类型的 playground 时，用户需要通过 `--mountpoint` 选项来指定文件系统的挂载点
+
+示例：
+```shell
+$ curveadm playground run --kind curvefs --mountpoint /path/to/mount  # 正确，/path/to/mount 为挂载点
+$ curveadm playground run --kind curvefs                              # 错误，未指定相应的挂载点
+```
+
+## 230002
+
+**类别：** [命令行选项][command-options]、[playground 选项][playground-options]
+
+**描述：**  playground 的挂载点要求为绝对路径
+
+**如何解决：** 当运行 CurveFS 类型的 playground 时，用户通过 `--mountpoint` 选项指定的文件系统挂载点必须为绝对路径
+
+示例：
+```shell
+$ curveadm playground run --kind curvefs --mountpoint /mnt/test  # 正确，/mnt/test 为有效挂载点
+$ curveadm playground run --kind curvefs --mountpoint test       # 错误，test 为无效挂载点
+```
+
+## 230003
+
+**类别：** [命令行选项][command-options]、[playground 选项][playground-options]
+
+**描述：**  playground 指定的挂载点不存在
+
+**如何解决：** 当运行 CurveFS 类型的 playground 时，用户通过 `--mountpoint` 选项指定的文件系统挂载点必须要求已存在于本机，若指定的挂载点未创建，用户需要在本机手动创建对应的挂载路径
+
+
+# 301000
+
+**类别：** [配置文件][configure]、[配置文件通用][configure-common]
+
+**描述：** 不支持的配置值类型
+
+**如何解决：** 配置文件中某些配置项对应的值只支持一些特定的类型，用户需要根据错误线索来锁定哪个配置项的值不符合要求，并进行相应的修正
+
+# 301002
+
+**类别：** [配置文件][configure]、[配置文件通用][configure-common]
+
+**描述：** 配置项对应的值要求为布尔类型
+
+**如何解决：** 用户需要根据错误线索来锁定哪个配置项对应的值要求为布尔类型，但实际却并不是，并将其根据需求修改成布尔类型（`true`、`false`）
+
+# 301003
+
+**类别：** [配置文件][configure]、[配置文件通用][configure-common]
+
+**描述：** 配置项对应的值要求为整型
+
+**如何解决：** 用户需要根据错误线索来锁定哪个配置项对应的值要求为整型，但实际却并不是，并将其根据需求修改成整型
+
+# 301004
+
+**类别：** [配置文件][configure]、[配置文件通用][configure-common]
+
+**描述：** 配置项对应的值要求为非空字符串
+
+**如何解决：** 用户需要根据错误线索来锁定哪个配置项对应的值要求为非空字符串，但实际却并不是，并将其根据需求修改成非空字符串
+
+# 301005
+
+**类别：** [配置文件][configure]、[配置文件通用][configure-common]
+
+**描述：** 配置项对应的值要求为正整数
+
+**如何解决：** 用户需要根据错误线索来锁定哪个配置项对应的值要求为正整数，但实际却并不是，并将其根据需求修改成正整数
+
+# 301006
+
+**类别：** [配置文件][configure]、[配置文件通用][configure-common]
+
+**描述：** 配置项对应的值要求为字符串数组
+
+**如何解决：** 用户需要根据错误线索来锁定哪个配置项对应的值要求为字符串数组，但实际却并不是，并将其根据需求修改成字符串数组
+
+# 301100
+
+**类别：** [配置文件][configure]、[配置文件通用][configure-common]
+
+**描述：** 不支持的变量类型
+
+**如何解决：** 目前配置文件中支持的变量类型为以下 3 类：`int`、`bool`、`string`，用户需要根据错误线索来锁定哪一个变量的值不符合要求，并进行相应的修正，详见[变量][variable]
+
+示例：
+
+```yaml
+global:
+  variable:
+    name: curve         # 正确，变量类型为字符串
+    age: 3              # 正确，变量类型为整数
+    cloud-native: true  # 正确，变量类型为布尔
+    labels:             # 错误，变量类型为数组，为不支持类型
+      - storage
+      - distruted system
+  ...
+```
+
+# 301101
+
+**类别：** [配置文件][configure]、[配置文件通用][configure-common]
+
+**描述：** 无效的变量值
+
+**如何解决：** 配置文件中变量对应的值不能为空，用户需要根据错误线索来锁定哪一个变量的值不符合要求，并进行相应的修正, 详见[变量][variable]
+
+
+
+示例：
+
+```yaml
+global:
+  variable:
+    name: curve    # 正确
+    age: 3         # 正确
+    cloud-native:  # 错误，变量对应的值为空
+```
+
+## 310000
+
+**类别：** [配置文件][configure]、[CurveAdm 配置文件][curveadm-configure]
+
+**描述：** 解析 CurveAdm 配置文件失败
+
+**如何解决：** 在修改 CurveAdm 配置文件时，有可能引入了一些不符合规范的字段，用户可根据错误线索及错误日志来锁定不符合规范的字段，并进行相应的修正，详见[CurveAdm 配置文件][curveadm-configure]
+
+示例：
+```ini
+[defaults]
+log_level = info
+sudo_alias = "sudo"
+timeout = 300
+auto_upgrade = true
+
+[ssh_connections]
+retries = 3
+timeout = 10
+```
+
+## 311000
+
+**类别：** [配置文件][configure]、[curveadm 配置文件][curveadm-configure]
+
+**描述：** CurveAdm 配置文件中的日志等级配置项无效
+
+**如何解决：** 目前 CurveAdm 支持的日志等级为以下 4 个：`debug`、`info`、`warn`, `error`，用户可根据需求调整日志等级为对应的级别，详见[CurveAdm 配置文件][curveadm-configure]
+
+示例：
+```ini
+[defaults]
+log_level = info
+sudo_alias = "sudo"
+timeout = 300
+auto_upgrade = true
+
+[ssh_connections]
+retries = 3
+timeout = 10
+```
+
+## 311001
+
+**类别：** [配置文件][configure]、[CurveAdm 配置文件][curveadm-configure]
+
+**描述：** CurveAdm 配置文件中引入了不支持的配置项
+
+**如何解决：** CurveAdm 配置文件中只可以填其支持的配置选项，当出现其他不支持的配置选项时，该错误码将会被报告，用户可根据错误线索去除那些不支持的配置项或进行修正，详见[CurveAdm 配置文件][curveadm-configure]
+
+示例：
+```ini
+[defaults]
+log_level = info
+sudo_alias = "sudo"
+timeout = 300
+auto_upgrade = true
+
+[ssh_connections]
+retries = 3
+timeout = 10
+```
+
+## 320000
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 未找到主机配置文件
+
+**如何解决：** 在导入主机列表时，请确保指定的主机配置文件存在，详见[主机管理][hosts]
+
+示例：
+
+```shell
+$ curveadm hosts commit /path/to/hosts.yaml
+```
+
+## 320001
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 读取主机配置文件失败
+
+**如何解决：** 用户可根据错误线索或查看错误日志，来排除对应的问题，详见[主机管理][hosts]
+
+
+## 320002
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 主机配置文件不存在任何内容
+
+**如何解决：** 用户需要将要导入的主机列表及其配置写入要提交的主机配置文件中，详见[主机管理][hosts]
+
+示例：
+
+```yaml
+global:
+  user: curve
+  ssh_port: 22
+  private_key_file: /home/curve/.ssh/id_rsa
+
+hosts:
+  - host: server-host1
+    hostname: 10.0.1.1
+  - host: server-host2
+    hostname: 10.0.1.2
+  - host: server-host3
+    hostname: 10.0.1.3
+  - host: client-host
+    hostname: 10.0.1.4
+    forward_agent: true
+    become_user: admin
+    labels:
+      - client
+```
+
+## 320003
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 解析主机配置文件失败
+
+**如何解决：** 导入的主机配置文件有可能存在不符合规范的配置项，用户需要根据错误线索锁定哪些配置项不符合规范并进行相应的修正，详见[主机管理][hosts]
+
+示例：
+
+```yaml
+global:
+  user: curve
+  ssh_port: 22
+  private_key_file: /home/curve/.ssh/id_rsa
+
+hosts:
+  - host: server-host1
+    hostname: 10.0.1.1
+  - host: server-host2
+    hostname: 10.0.1.2
+  - host: server-host3
+    hostname: 10.0.1.3
+  - host: client-host
+    hostname: 10.0.1.4
+    forward_agent: true
+    become_user: admin
+    labels:
+      - client
+```
+
+## 321000
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 主机配置文件中引入了不支持的配置项
+
+**如何解决：** 主机配置文件中只可以填其支持的配置选项，当出现其他不支持的配置选项时，该错误码将会被报告，用户可根据错误线索去除那些不支持的配置项或进行修正，详见[主机管理][hosts]
+
+## 321001
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 主机缺少 `host` 配置项
+
+**如何解决：** 主机列表中每一项中的 `host` 配置项是必须的，用户需要根据错误线索来锁定哪一个主机缺少 `host` 配置项并进行相应的修正，详见[主机管理][hosts]
+
+示例：
+
+```yaml
+global:
+  user: curve
+  ssh_port: 22
+  private_key_file: /home/curve/.ssh/id_rsa
+
+hosts:
+  - host: server-host1  # 正确，host 为 server-host1
+    hostname: 10.0.1.1
+  - hostname: 10.0.1.2  # 错误，缺少 host 配置项
+```
+
+## 321002
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 主机缺少 `hostname` 配置项
+
+**如何解决：** 主机列表中每一项中的 `hostname` 配置项是必须的，用户需要根据错误线索来锁定哪一个主机缺少 `hostname` 配置项并进行相应的修正，详见[主机管理][hosts]
+
+示例：
+
+```yaml
+global:
+  user: curve
+  ssh_port: 22
+  private_key_file: /home/curve/.ssh/id_rsa
+
+hosts:
+  - host: server-host1  # 正确，hostname 为 10.0.1.1
+    hostname: 10.0.1.1
+  - host: server-host2  # 错误，缺少 hostname 配置项
+```
+
+## 321003
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 主机配置文件中的 SSH 端口超过最大端口限制
+
+**如何解决：** 用户需要将主机配置文件中的 SSH 端口配置项 `ssh_port` 的值限制在 **[0, 65535]** 这个有效区间内，详见[主机管理][hosts]
+
+正确示例：
+
+```yaml
+global:
+  user: curve
+  ssh_port: 22  # 正确
+  ...
+```
+
+错误示例：
+
+```yaml
+global:
+  user: curve
+  ssh_port: 100000 # 错误，超过最大端口限制
+  ...
+```
+
+## 321004
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 主机配置文件中的 SSH 私钥路径必须为绝对路径
+
+**如何解决：** 用户需要将主机配置文件中的私钥路径配置项 `private_key_file` 的值设为私钥的绝对路径，详见[主机管理][hosts]
+
+正确示例：
+
+```yaml
+global:
+  user: curve
+  ssh_port: 22
+  private_key_file: /home/curve/.ssh/id_rsa  # 正确
+  ...
+```
+
+错误示例：
+
+```yaml
+global:
+  user: curve
+  ssh_port: 22
+  private_key_file: ~/.ssh/id_rsa  # 错误，私钥路径需为绝对路径
+  ...
+```
+
+## 321005
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 主机配置文件中配置的 SSH 私钥文件不存在
+
+**如何解决：** 用户需要确保主机配置文件中配置的私钥文件存在于本机。若用户以私钥的方式登录远程主机，则需要免密登录，可参考[<三步完成免密登录>](https://www.thegeekstuff.com/2008/11/3-steps-to-perform-ssh-login-without-password-using-ssh-keygen-ssh-copy-id/)，其他主机管理详见[主机管理][hosts]
+
+
+## 321006
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 主机配置文件中配置的 SSH 私钥文件的权限需为 `600`
+
+**如何解决：** 用户需要确保主机配置文件中配置的私钥文件的权限为 `600`，否则有可能会出现登录失败的情况。当权限不符合要求时，用户可通过 `chmod` 命令修改其权限，详见[主机管理][hosts]
+
+示例：
+
+``` shell
+$ chmod 600 ~/.ssh/id_rsa
+$ ls -l ~/.ssh/id_rsa
+-rw------- 1 root root 3243 8月   3 01:45 /root/.ssh/id_rsa
+```
+
+## 321007
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 主机配置文件中存在重复的主机
+
+**如何解决：** CurveAdm 以主机的 `host` 为键来查找主机的相应配置，用户需确保所有主机的 `host` 是独一无二的。当出现重复的主机 `host` 时，用户可根据错误线索来锁定哪些主机的 `host` 配置项重复了，并进行相应的修正，详见[主机管理][hosts]
+
+示例：
+
+```yaml
+global:
+  user: curve
+  ssh_port: 22
+  private_key_file: /home/curve/.ssh/id_rsa
+
+hosts:
+  - host: server-host1  # 正确
+    hostname: 10.0.1.1
+  - host: server-host1  # 错误，host 为 server-host1 的主机已重复
+    hostname: 10.0.1.1
+```
+
+## 321008
+
+**类别：** [配置文件][configure]、[主机配置文件][hosts-configure]
+
+**描述：** 主机配置文件中的 `hostname` 配置项要求为有效的 IP 地址
+
+**如何解决：** 目前主机的 `hostname` 配置项被强制限制为主机的 IP 地址，用户需确保所有主机的 `hostname` 配置项都符合这一要求。后续我们有可能会开放域名的形式，详见[主机管理][hosts]
+
+示例：
+
+```yaml
+global:
+  user: curve
+  ssh_port: 22
+  private_key_file: /home/curve/.ssh/id_rsa
+
+hosts:
+  - host: server-host1
+    hostname: 10.0.1.1         # 正确
+  - host: server-host2
+    hostname: curve.163.org    # 错误，hostname 不能为域名
+  - host: server-host3
+    hostname: 256.256.256.256  # 错误，该 IP 地址是无效的
+```
+
+## 330000
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 未找到用户指定的拓扑文件
+
+**如何解决：** 用户需确保指定的集群拓扑文件存在于本机，详见[集群拓扑文件][topology]
+
+## 330001
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 读取拓扑文件失败
+
+**如何解决：** 用户可根据错误线索或查看错误日志来排除相应的问题，详见[集群拓扑文件][topology]
+
+## 330002
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 集群拓扑文件中不存在任何内容
+
+**如何解决：** 用户需将集群拓扑写入集群拓扑文件，并在命令行中指定该文件的绝对路径，详见[集群拓扑文件][topology]
+
+示例：
+
+```yaml
+kind: curvefs
+global:
+  container_image: opencurvedocker/curvefs:latest
+  data_dir: /home/curve/curvefs/data/${service_role}
+  log_dir: /home/curve/curvefs/logs/${service_role}
+
+etcd_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 2380
+    listen.client_port: 2379
+
+...
+```
+
+## 330003
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 解析集群拓扑失败
+
+**如何解决：** 集群拓扑可能存在不符合规范的配置项，用户需要根据错误线索来锁定那些不符合规范的配置，并进行相应的修正，详见[集群拓扑文件][topology]
+
+示例：
+
+```yaml
+kind: curvefs
+global:
+  container_image: opencurvedocker/curvefs:latest
+  data_dir: /home/curve/curvefs/data/${service_role}
+  log_dir: /home/curve/curvefs/logs/${service_role}
+
+etcd_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 2380
+    listen.client_port: 2379
+
+...
+```
+
+## 330004
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 拓扑文件中的变量注册失败
+
+**如何解决：** 变量的重复定义会导致变量注册失败，用户可根据错误线索或查看相应的错误日志来锁定具体的错误，并对其进行修正，详见[拓扑变量][variable]
+
+示例：
+
+```yaml
+kind: curvefs
+global:
+  variable:
+    name: curve    # 正确
+    age: 18        # 正确
+    name: curvefs  # 错误，变量重复定义
+...
+```
+
+## 330005
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 拓扑文件中的变量解析失败
+
+**如何解决：** 变量循环解析会导致变量解析失败，用户可根据错误线索或查看相应的错误日志来锁定具体的错误，并对其进行修正，详见[拓扑变量][variable]
+
+示例：
+
+```yaml
+kind: curvefs
+global:
+  variable:
+    from: ${to}
+    to: ${from}
+...
+```
+
+以上的变量块中，解析变量 `${from}` 依赖变量 `${to}` 的值，而解析变量 `${to}` 也要依赖变量 `from` 的值，这导致变量解析陷入死循环，无法成功解析所有变量
+
+## 330006
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 设置变量失败
+
+**如何解决：** *该错误码暂无使用场景*
+
+
+## 330007
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 拓扑文件中的变量渲染失败
+
+**如何解决：** 拓扑变量分为内建变量和自定义变量，用户需要确保在拓扑文件中填写的变量属于这 2 类，否则会导致变量渲染失败, 详见[拓扑变量][variable]
+
+示例：
+
+```yaml
+kind: curvebs
+global:
+  variable:
+    machine1: server-host1
+    machine2: server-host2
+    machine3: server-host3
+
+etcd_services:
+  config:
+    listen.ip: ${service_host}  # 正确，${service_host} 为内建变量
+    listen.port: 2380
+    listen.client_port: 2379
+  deploy:
+    - host: ${machine1}  # 正确，${machine1} 为用户自定义变量
+    - host: ${machine2}  # 正确，${machine2} 为用户自定义变量
+    - host: ${machine3}  # 正确，${machine3} 为用户自定义变量
+    - host: ${machine4}  # 错误，${machine4} 变量不存在
+...
+```
+
+## 330008
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 计算集群拓扑创建的哈希值失败
+
+**如何解决：** 这个错误属于代码逻辑错误，正常情况下不应该报告给用户，若用户收到该错误码，代表该版本 CurveAdm 代码逻辑存在问题，用户可通过以下 2 种方法反馈该问题：
+
+* [提交 issue][issue]
+
+* 通过扫描以下二维码，添加微信群
+
+<img src="https://raw.githubusercontent.com/opencurve/curve/master/docs/images/curve-wechat.jpeg" width="330px" height="400px">
+
+
+## 331000
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 不支持的集群类型
+
+**如何解决：** 用户需在集群拓扑文件中指定该集群的正确类型。若部署 CurveBS 集群，则需指定 `kind` 配置项为 `curvebs`, 若部署 CurveFS 集群，则需指定 `kind` 配置项为 `curvefs`。详见[集群拓扑][topology]
+
+CurveBS 集群拓扑示例：
+
+```yaml
+kind: curvebs
+...
+```
+
+CurveFS 集群拓扑示例：
+
+```yaml
+kind: curvefs
+...
+```
+
+## 331001
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 集群拓扑文件中不存在任何服务
+
+**如何解决：** 集群拓扑文件是用来描述哪些服务部署在那些机器上，用户需要根据集群的类型在集群拓扑文件中填写相应的服务列表，详见[集群拓扑][topology]
+
+错误示例：
+
+> 以下的集群拓扑文件中不存在任何服务
+
+```yaml
+kind: curvefs
+global:
+  container_image: opencurvedocker/curvefs:latest
+  data_dir: /home/curve/curvefs/data/${service_role}
+  log_dir: /home/curve/curvefs/logs/${service_role}
+```
+
+正确示例：
+
+> 以下的集群拓扑文件中包含了 curvefs 所需的所有服务（etcd、mds、metaserver）
+
+```yaml
+kind: curvefs
+global:
+  container_image: opencurvedocker/curvefs:latest
+  data_dir: /home/curve/curvefs/data/${service_role}
+  log_dir: /home/curve/curvefs/logs/${service_role}
+
+etcd_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 2380
+    listen.client_port: 2379
+  deploy:
+    - host: server-host1
+    - host: server-host2
+    - host: server-host3
+
+mds_services:
+  config:
+    ...
+  deploy:
+    ...
+
+metaserver_services:
+  config:
+    ...
+  deploy:
+    ...
+```
+
+## 331002
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 集群拓扑文件中复制服务配置项要求为正整数
+
+**如何解决：** 集群拓扑文件复制服务的配置项 `replicas` 的值要求为正整数，用户可根据错误线索来锁定哪一个台主机的 `replicas` 不符合要求，并进行相应的修正，详见[replicas][replicas]
+
+示例：
+
+```yaml
+kind: curvebs
+...
+chunkserver_services:
+  config:
+    listen.port: 820${service_replicas_sequence}
+  deploy:
+    - host: server-host1
+      replicas: 3         # 正确，replicas 为 3
+    - host: server-host2
+      replicas: -1        # 错误，replicas 需为正整数
+    - host: server-host3
+      replicas: 0         # 错误，replicas 需为正整数
+```
+
+## 331003
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 集群拓扑文件中的变量区块不符合规范
+
+**如何解决：** 用户可在集群拓扑文件中的变量区块自定义变量，但要求该变量区块为字典类型，详见[拓扑变量][variable]
+
+正确示例：
+
+```yaml
+kind: curvebs
+global:
+  variable:
+    machine1: server-host1
+    machine2: server-host2
+    machine3: server-host3
+```
+
+错误示例：
+
+```yaml
+kind: curvebs
+global:
+  variable:
+    - server-host1
+    - server-host2
+    - server-host3
+```
+
+## 331004
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 集群拓扑文件中存在重复的服务 ID
+
+**如何解决：** 这个错误属于代码逻辑错误，正常情况下不应该报告给用户，若用户收到该错误码，代表该版本 CurveAdm 代码逻辑存在问题，用户可通过以下 2 种方法反馈该问题：
+
+* [提交 issue][issue]
+
+* 通过扫描以下二维码，添加微信群
+
+<img src="https://raw.githubusercontent.com/opencurve/curve/master/docs/images/curve-wechat.jpeg" width="330px" height="400px">
+
+## 332000
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 在提交拓扑时删除服务是被禁止的
+
+**如何解决：** 为保证操作安全，在提交集群拓扑文件时，用户只能在拓扑文件中修改服务的配置项，不能对服务列表做任何增减操作
+
+## 332001
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 在提交拓扑时增加服务是被禁止的
+
+**如何解决：** 如果你需要新增服务，需要使用扩容命令，详见[扩容集群][scale-curve]
+
+## 332002
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 在扩容集群时删除服务是被禁止的
+
+**如何解决：** 为保证操作安全，扩容集群时，用户只能在拓扑文件中新增某一角色的服务列表，不能删除任何服务。用户可根据错误线索来在集群拓扑文件中恢复那些被删除的服务列表，详见[扩容集群][scale-curve]
+
+## 332003
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 没有新增服务用于集群扩容
+
+**如何解决：** 在扩容集群时，用户需要在拓扑文件中新增某一角色的服务列表，详见[扩容集群][scale-curve]
+
+## 332004
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 每一次扩容操作要求新增服务列表为同一角色服务
+
+**如何解决：** 在扩容集群时，用户需要在拓扑文件中新增扩容的服务列表，但要确保新增的服务列表都为同一角色，详见[扩容集群][scale-curve]
+
+正确示例：
+
+> 新增的 3 个服务都为 etcd 服务，符合要求
+
+```yaml
+kind: curvebs
+global:
+  container_image: opencurvedocker/curvebs:v1.2
+  variable:
+    machine1: debian10-001
+    machine2: debian10-002
+    machine3: debian10-003
+    machine4: debian10-004  # 新增机器
+    machine5: debian10-005  # 新增机器
+    machine6: debian10-006  # 新增机器
+
+etcd_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 2380
+    listen.client_port: 2379
+  deploy:
+    - host: ${machine1}
+    - host: ${machine2}
+    - host: ${machine3}
+    - host: ${machine4}  # 新增服务
+    - host: ${machine5}  # 新增服务
+    - host: ${machine6}  # 新增服务
+...
+```
+
+错误示例：
+
+> 新增的服务有 etcd 和 mds 服务，不符合要求
+
+```yaml
+kind: curvebs
+global:
+  container_image: opencurvedocker/curvebs:v1.2
+  variable:
+    machine1: debian10-001
+    machine2: debian10-002
+    machine3: debian10-003
+    machine4: debian10-004  # 新增机器
+    machine5: debian10-005  # 新增机器
+    machine6: debian10-006  # 新增机器
+
+etcd_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 2380
+    listen.client_port: 2379
+  deploy:
+    - host: ${machine1}
+    - host: ${machine2}
+    - host: ${machine3}
+    - host: ${machine4}  # 新增服务
+    - host: ${machine5}  # 新增服务
+    - host: ${machine6}  # 新增服务
+
+mds_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 6700
+    listen.dummy_port: 7700
+  deploy:
+    - host: ${machine1}
+    - host: ${machine2}
+    - host: ${machine3}
+    - host: ${machine4}  # 新增服务
+    - host: ${machine5}  # 新增服务
+    - host: ${machine6}  # 新增服务
+```
+
+## 332005
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 每一次扩容 chunkserver 服务时需要至少新增 3 台主机来分布 zone
+
+**如何解决：** 对于 chunkserver 服务来说，每次扩容都会新增一个逻辑池，新增的服务都位于该逻辑池中，请确保每次扩容至少增加 3 台以上的主机，否则 CurveBS 将没有足够的主机用来放置 3 副本。**特别需要注意**的是，3 台主机可以为同一主机，只要 `deploy` 中新增 3 个以上的 `host` 即可，即使他们实际指向同一台物理主机，详见[扩容集群][scale-curve]
+
+正确示例：
+
+> 新增 debian10-004、debian10-005、debian10-006 3 台主机
+
+```yaml
+kind: curvebs
+global:
+  container_image: opencurvedocker/curvebs:v1.2
+  variable:
+    machine1: debian10-001
+    machine2: debian10-002
+    machine3: debian10-003
+    machine4: debian10-004  # 新增机器
+    machine5: debian10-005  # 新增机器
+    machine6: debian10-006  # 新增机器
+
+chunkserver_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 82${format_replicas_sequence}
+    data_dir: /data/chunkserver${service_replicas_sequence}
+    copysets: 100
+  deploy:
+    - host: ${machine1}
+      replicas: 3
+    - host: ${machine2}
+      replicas: 3
+    - host: ${machine3}
+      replicas: 3
+    - host: ${machine4}  # 新增服务
+      replicas: 3
+    - host: ${machine5}  # 新增服务
+      replicas: 3
+    - host: ${machine6}  # 新增服务
+      replicas: 3
+...
+```
+
+错误示例：
+
+> 只新增 debian10-004 这一台主机
+
+```yaml
+kind: curvebs
+global:
+  container_image: opencurvedocker/curvebs:v1.2
+  variable:
+    machine1: debian10-001
+    machine2: debian10-002
+    machine3: debian10-003
+    machine4: debian10-004  # 新增机器
+    machine5: debian10-005  # 新增机器
+    machine6: debian10-006  # 新增机器
+
+chunkserver_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 82${format_replicas_sequence}
+    data_dir: /data/chunkserver${service_replicas_sequence}
+    copysets: 100
+  deploy:
+    - host: ${machine1}
+      replicas: 3
+    - host: ${machine2}
+      replicas: 3
+    - host: ${machine3}
+      replicas: 3
+    - host: ${machine4}  # 新增服务
+      replicas: 3
+...
+```
+
+## 332006
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 每一次扩容 metaserver 服务时需要至少新增 3 台主机来分布 zone
+
+**如何解决：** 对于 metaserver 服务来说，每次扩容都会新增一个逻辑池，新增的服务都位于该逻辑池中，请确保每次扩容至少增加 3 台以上的主机，否则 CurveFS 将没有足够的主机用来放置 3 副本。**特别需要注意**的是，3 台主机可以为同一主机，只要 `deploy` 中新增 3 个以上的 `host` 即可，即使他们实际指向同一台物理主机，详见[扩容集群][scale-curve]
+
+正确示例：
+
+> 新增 debian10-004、debian10-005、debian10-006 3 台主机
+
+```yaml
+kind: curvefs
+global:
+  container_image: opencurvedocker/curvefs:latest
+  variable:
+    machine1: debian10-001
+    machine2: debian10-002
+    machine3: debian10-003
+    machine4: debian10-004  # 新增机器
+    machine5: debian10-005  # 新增机器
+    machine6: debian10-006  # 新增机器
+
+metaserver_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 6800
+    listen.external_port: 7800
+    metaserver.loglevel: 0
+  deploy:
+    - host: ${machine1}
+    - host: ${machine2}
+    - host: ${machine3}
+    - host: ${machine4}  # 新增服务
+    - host: ${machine5}  # 新增服务
+    - host: ${machine6}  # 新增服务
+...
+```
+
+错误示例：
+
+> 只新增 debian10-004 这一台主机
+
+```yaml
+kind: curvefs
+global:
+  container_image: opencurvedocker/curvefs:latest
+  variable:
+    machine1: debian10-001
+    machine2: debian10-002
+    machine3: debian10-003
+    machine4: debian10-004  # 新增机器
+    machine5: debian10-005  # 新增机器
+    machine6: debian10-006  # 新增机器
+
+metaserver_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 6800
+    listen.external_port: 7800
+    metaserver.loglevel: 0
+  deploy:
+    - host: ${machine1}
+    - host: ${machine2}
+    - host: ${machine3}
+    - host: ${machine4}  # 新增服务
+...
+```
+
+## 332007
+
+**类别：** [配置文件][configure]、[拓扑配置文件][topology-configure]
+
+**描述：** 在迁移服务的同时删除服务是被禁止的
+
+**如何解决：** **待定**
+
+
+
+## 340000
+
+**类别：** [配置文件][configure]、[格式化配置文件][format-configure]
+
+**描述：** 未找到格式化配置文件
+
+**如何解决：** 用户在执行格式化时需通过 `-f` 选项指定格式化配置文件，若用户没有指定，CurveAdm 默认使用当前目录下的 `format.yaml` 作为格式化配置文件。请确保对应的格式化配置文件存在，详见[格式化磁盘][format-disk]
+
+
+## 340001
+
+**类别：** [配置文件][configure]、[格式化配置文件][format-configure]
+
+**描述：** 解析格式化配置文件失败
+
+**如何解决：** 格式化配置文件中有可能出现了不符合规范的配置项，用户可根据错误线索锁定具体的错误，并对其进行修正，详见[格式化磁盘][format-disk]
+
+示例：
+
+```yaml
+host:
+  - server-host1
+  - server-host2
+  - server-host3
+disk:
+  - /dev/sda:/data/chunkserver0:90  # device:mount_path:format_percent
+  - /dev/sdb:/data/chunkserver1:90
+  - /dev/sdc:/data/chunkserver2:90
+```
+
+## 341000
+
+**类别：** [配置文件][configure]、[格式化配置文件][format-configure]
+
+**描述：** 格式化配置文件中的磁盘列表不符合规范
+
+**如何解决：** 磁盘列表中的每一项由设备、挂载路径、格式化百分比这 3 部分组成，并由 `:` 符合间隔开，用户可根据错误线索锁定哪一项不符合规范并进行相应修正，详见[格式化磁盘][format-disk]
+
+示例：
+```yaml
+host:
+  - host1
+  - host2
+  - host3
+disk:
+  - /dev/sda:/data/chunkserver0      # 错误：缺少格式化百分比
+  - /dev/sdb:/data/chunkserver1:     # 错误: 缺少格式化百分比
+  - /dev/sdc:/data/chunkserver2:90:  # 错误: 多出一部分
+  - /dev/sdd:/data/chunkserver3:90   # 正确
+```
+
+## 341001
+
+**类别：** [配置文件][configure]、[格式化配置文件][format-configure]
+
+**描述：** 格式化配置文件中存在无效的设备名
+
+**如何解决：** 磁盘列表中的每一项由设备、挂载路径、格式化百分比这 3 部分组成，并由 `:` 符号间隔开，其中的设备名必须为绝对路径，用户可根据错误线索锁定哪一项不符合规范并进行相应修正
+
+示例：
+```yaml
+host:
+  - host1
+  - host2
+  - host3
+disk:
+  - sda:/data/chunkserver0:90       # 错误：磁盘 sda 的设备名应为 /dev/sda
+  - /dev/sdb:/data/chunkserver1:90  # 正确
+  - /dev/sdc:/data/chunkserver2:90  # 正确
+```
+
+## 341002
+
+**类别：** [配置文件][configure]、[格式化配置文件][format-configure]
+
+**描述：** 格式化配置文件中的挂载路径必须为绝对路径
+
+**如何解决：** 磁盘列表中的每一项由设备、挂载路径、格式化百分比这 3 部分组成，并由 `:` 符合间隔开，其中的挂载路径必须为绝对路径，用户可根据错误线索锁定哪一项不符合规范并进行相应修正
+
+示例：
+```yaml
+host:
+  - host1
+  - host2
+  - host3
+disk:
+  - /dev/sda:chunkserver0:90        # 错误：挂载路径 chunkserver0 应为 /data/chunkserver0
+  - /dev/sdb:/data/chunkserver1:90  # 正确
+  - /dev/sdc:/data/chunkserver2:90  # 正确
+```
+
+## 341003
+
+**类别：** [配置文件][configure]、[格式化配置文件][format-configure]
+
+**描述：** 格式化配置文件中的格式化百分比需为整数
+
+**如何解决：** 磁盘列表中的每一项由设备、挂载路径、格式化百分比这 3 部分组成，并由 `:` 符合间隔开，其中的格式化百分比需为整数，用户可根据错误线索锁定哪一项不符合规范并进行相应修正
+
+示例：
+```yaml
+host:
+  - host1
+  - host2
+  - host3
+disk:
+  - /dev/sda:/data/chunkserver0:10.5  # 错误：10.5 为浮点
+  - /dev/sdb:/data/chunkserver1:xyz   # 错误：xyz 不是整数
+  - /dev/sdc:/data/chunkserver2:90    # 正确
+```
+
+## 341004
+
+**类别：** [配置文件][configure]、[格式化配置文件][format-configure]
+
+**描述：** 格式化配置文件中的格式化百分比需在 **[1, 100]** 这个区间内
+
+**如何解决：** 磁盘列表中的每一项由设备、挂载路径、格式化百分比这 3 部分组成，并由 `:` 符合间隔开，其中的格式化百分比需在 **[1, 100]** 这个区间内，用户可根据错误线索锁定哪一项不符合规范并进行相应修正
+
+示例：
+```yaml
+host:
+  - host1
+  - host2
+  - host3
+disk:
+  - /dev/sda:/data/chunkserver0:-1   # 错误：-1 不在 [1, 100] 区间内
+  - /dev/sdb:/data/chunkserver1:101  # 错误：101 不在 [1, 100] 区间内
+  - /dev/sdc:/data/chunkserver1:0    # 错误：0 不在 [1, 100] 区间内
+  - /dev/sdd:/data/chunkserver2:1    # 正确
+  - /dev/sde:/data/chunkserver3:100  # 正确
+```
+
+## 350000
+
+**类别：** [配置文件][configure]、[客户端配置文件][client-configure]
+
+**描述：** 解析客户端配置文件失败
+
+**如何解决：** 客户端配置文件中有可能出现了不符合规范的配置项，用户可根据错误线索锁定具体的错误，并对其进行修正，详见[CurveBS 客户端配置文件][curvebs-client-configure]、[CurveFS 客户端配置文件][curvefs-client-configure]
+
+
+## 350001
+
+**类别：** [配置文件][configure]、[客户端配置文件][client-configure]
+
+**描述：** 客户端配置文件中的类型
+
+**如何解决：** 客户端配置文件中有可能出现了不符合规范的配置项，用户可根据错误线索锁定具体的错误，并对其进行修正，详见[CurveBS 客户端配置文件][curvebs-client-configure]、[CurveFS 客户端配置文件][curvefs-client-configure]
+
+
+CurveBS 客户端配置文件示例：
+
+```yaml
+kind: curvebs
+...
+```
+
+CurveFS 客户端配置文件示例：
+
+```yaml
+kind: curvefs
+...
+```
+
+
+# 400000
+
+**类别：** [通用逻辑][common-logic]、[主机相关][hosts-logic]
+
+**描述：** 未找到对应的主机
+
+**如何解决：** 用户需确保在配置文件中或命令行中指定的主机都已被导入，若有主机未被导入，用户可在主机配置文件中添加相应的主机，并将其导入，详见[主机管理][hosts]
+
+
+显示当前已导入主机列表
+
+```shell
+$ curveadm hosts ls
+```
+
+```shell
+Host          Hostname  User   Port  Private Key File         Forward Agent  Become User  Labels
+----          --------  ----   ----  ----------------         -------------  -----------  ------
+server-host1  10.0.1.1  curve  22    /home/curve/.ssh/id_rsa  N              -            -
+server-host2  10.0.1.2  curve  22    /home/curve/.ssh/id_rsa  N              -            -
+server-host3  10.0.1.3  curve  22    /home/curve/.ssh/id_rsa  N              -            -
+client-host   10.0.1.4  curve  22    /home/curve/.ssh/id_rsa  Y              admin        client
+```
+
+配置文件中使用主机示例：
+
+```yaml
+kind: curvefs
+global:
+  variable:
+    machine1: server-host1  # 正确，server-host1 主机已被导入
+    machine2: server-host2  # 正确，server-host2 主机已被导入
+    machine3: server-host3  # 正确，server-host3 主机已被导入
+    machine4: server-host4  # 错误，server-host4 主机未被导入
+...
+```
+
+命令行中使用主机示例：
+
+```shell
+$ curveadm curveadm mount /fs1 test1 --host client-host   # 正确，client-host 主机已被导入
+$ curveadm curveadm mount /fs1 test1 --host client-host2  # 错误，client-host 主机未被导入
+```
+
+## 410001
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 没有指定的集群
+
+**如何解决：** 用户在进行集群相关的操作时，需切换到一个特定的集群，若当前没有集群，用户可新增一个集群后再切换过去，详见[添加集群并切换集群][add-and-checkout]
+
+示例：
+
+##### 1. 添加 'my-cluster' 集群，并指定集群拓扑文件
+```shell
+$ curveadm cluster add my-cluster -f topology.yaml
+```
+
+##### 2. 切换 'my-cluster' 集群为当前管理集群
+```shell
+$ curveadm cluster checkout my-cluster
+```
+
+## 410002
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 没有主机或磁盘列表用于格式化
+
+**如何解决：** CurveAdm 在解析完格式化配置文件后，并未发现任何用于格式化的主机或列表，出现此类情况是由于用户提供的格式化配置文件未按规定格式填写，用户可参见[磁盘格式化][format-disk]来准备磁盘格式化配置文件
+
+示例：
+
+```yaml
+host:
+  - server-host1
+  - server-host2
+  - server-host3
+disk:
+  - /dev/sda:/data/chunkserver0:90  # device:mount_path:format_percent
+  - /dev/sdb:/data/chunkserver1:90
+  - /dev/sdc:/data/chunkserver2:90
+```
+
+## 410003
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 获取磁盘 UUID 失败
+
+**如何解决：** 在进行磁盘格式化的时候，CurveAdm 会尝试去获取磁盘的 UUID，以用来将相应的磁盘挂载点记录添加到 `fstab` 文件中，用户可根据错误码提供的错误线索以及查看对应的日志文件来排除相应的问题
+
+## 410004
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 磁盘格式化配置文件中提供的设备并不是磁盘设备
+
+**如何解决：** 磁盘列表中的每一项由设备、挂载路径、格式化百分比这 3 部分组成，并由 `:` 符号间隔开，其中的设备必须为磁盘，用户可根据错误线索来锁定哪一项不符合规范并进行相应修正
+
+示例：
+
+```yaml
+host:
+  - server-host1
+  - server-host2
+  - server-host3
+disk:
+  - /dev/sda:/data/chunkserver0:90   # 正确，/dev/sda 为磁盘设备
+  - /dev/sdb1:/data/chunkserver0:90  # 正确，/dev/sdb1 为磁盘设备
+  - /tmp:/data/chunkserver1:90       # 错误, /tmp 并不是磁盘设备
+```
+
+## 410005
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 无效的磁盘 UUID
+
+**如何解决：** *该错误码暂未被使用*
+
+## 410006
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 没有服务用于预检
+
+**如何解决：** *该错误码暂未被使用*
+
+## 410007
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 没有服务用于部署
+
+**如何解决：** *该错误码暂未被使用*
+
+## 410008
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 未找到服务对应的容器 ID
+
+**如何解决：** 这个错误属于代码逻辑错误，正常情况下不应该报告给用户，若用户收到该错误码，代表该版本 CurveAdm 代码逻辑存在问题，用户可通过以下 2 种方法反馈该问题：
+
+* [提交 issue][issue]
+
+* 通过扫描以下二维码，添加微信群
+
+<img src="https://raw.githubusercontent.com/opencurve/curve/master/docs/images/curve-wechat.jpeg" width="330px" height="400px">
+
+## 410009
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 集群已存在
+
+**如何解决：** 用户在新增集群时，指定的集群名已经存在。用户可通过 `curveadm cluster ls` 查看已经存在的集群列表，并指定一个未存在的集群名进行添加
+
+## 410010
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 未找到指定集群
+
+**如何解决：** 用户在切换集群、删除集群等操作时需确保指定的集群已存在，用户可通过 `curveadm cluster ls` 查看已存在的集群列表
+
+## 410011
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 删除集群前需清理该集群中所有的服务
+
+**如何解决：** 为保证集群服务不残留在主机上，从而影响其他集群的部署，用户在删除集群前需清理该集群下的所有服务。当然用户也可以添加 `-f` 选项强制删除集群，但是这是我们不推介的
+
+示例：
+
+##### 1. 清理集群服务
+```shell
+$ curveadm stop
+$ curveadm clean
+```
+
+##### 2. 删除集群
+
+```shell
+$ curveadm cluster rm my-cluster
+```
+
+## 410012
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 不支持的配置类型
+
+**如何解决：** 这个错误属于代码逻辑错误，正常情况下不应该报告给用户，若用户收到该错误码，代表该版本 CurveAdm 代码逻辑存在问题，用户可通过以下 2 种方法反馈该问题：
+
+* [提交 issue][issue]
+
+* 通过扫描以下二维码，添加微信群
+
+<img src="https://raw.githubusercontent.com/opencurve/curve/master/docs/images/curve-wechat.jpeg" width="330px" height="400px">
+
+## 410013
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 位置的任务类型
+
+**如何解决：** 这个错误属于代码逻辑错误，正常情况下不应该报告给用户，若用户收到该错误码，代表该版本 CurveAdm 代码逻辑存在问题，用户可通过以下 2 种方法反馈该问题：
+
+* [提交 issue][issue]
+
+* 通过扫描以下二维码，添加微信群
+
+<img src="https://raw.githubusercontent.com/opencurve/curve/master/docs/images/curve-wechat.jpeg" width="330px" height="400px">
+
+
+## 410014
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 需停止的服务对应的容器已被删除
+
+**如何解决：** CurveAdm 在停止服务时，发现其对应的容器已被删除，造成这一情况的原因一般是用户手动删除了指定的容器或其他原因导致容器被清理。如果接下来用户打算清理集群，那么可以忽略这个错误，否则用户可以需要重新使用部署命令来重新创建这个服务
+
+示例：
+
+```shell
+$ curveadm deploy -k
+```
+
+部署命令为幂等操作，可重复使用
+
+## 410015
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 服务对应的容器处于不正常状态
+
+**如何解决：** 用户可通过错误线索来锁定哪个服务容器处于不正常状态，并查看该服务对应的日志来排除相应的问题来使服务恢复正常。服务对应的日志目录可通过 `curveadm status -v` 命令来查看
+
+示例：
+
+```shell
+$ curveadm status -v
+```
+
+```shell
+Get Service Status: [OK]
+
+cluster name      : my-cluster
+cluster kind      : curvefs
+cluster mds addr  : 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
+cluster mds leader: 10.0.1.1:6700 / 6d7a415caf90
+
+Id            Role        Host          Replicas  Container Id  Status       Ports      Log Dir                Data Dir
+--            ----        ----          --------  ------------  ------       -----      -------                --------
+e5f42b2055c5  etcd        debian10-001  1/1       348c7725bb13  Up 29 hours  2379,2380  /tmp/logs/etcd0        /tmp/data/etcd0
+a9600f9c65fd  etcd        debian10-002  1/1       dd2d26c5dd19  Up 29 hours  2379,2380  /tmp/logs/etcd0        /tmp/data/etcd0
+811219cda513  etcd        debian10-003  1/1       8976d1a44c51  Up 29 hours  2379,2380  /tmp/logs/etcd0        /tmp/data/etcd0
+6d7a415caf90  mds         debian10-001  1/1       68cdf36f0445  Up 29 hours  6700,7700  /tmp/logs/mds0         /tmp/data/mds0
+f2977583365e  mds         debian10-002  1/1       30fa351b59c4  Up 29 hours  7700       /tmp/logs/mds0         /tmp/data/mds0
+d229ce4fbe77  mds         debian10-003  1/1       f83363341980  Up 29 hours  7700       /tmp/logs/mds0         /tmp/data/mds0
+c1ed2e71523d  metaserver  debian10-001  1/1       ba4149ab74d8  Up 29 hours  6800       /tmp/logs/metaserver0  /tmp/data/metaserver0
+c81fa5a0c805  metaserver  debian10-002  1/1       9c6d16f787c0  Up 29 hours  6800       /tmp/logs/metaserver0  /tmp/data/metaserver0
+95a6772ba8ad  metaserver  debian10-003  1/1       6a58f7d05457  Up 29 hours  6800       /tmp/logs/metaserver0  /tmp/data/metaserver0
+```
+
+## 410016
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 编码集群逻辑池 JSON 字符串失败
+
+**如何解决：** 这个错误属于代码逻辑错误，正常情况下不应该报告给用户，若用户收到该错误码，代表该版本 CurveAdm 代码逻辑存在问题，用户可通过以下 2 种方法反馈该问题：
+
+* [提交 issue][issue]
+
+* 通过扫描以下二维码，添加微信群
+
+<img src="https://raw.githubusercontent.com/opencurve/curve/master/docs/images/curve-wechat.jpeg" width="330px" height="400px">
+
+## 410017
+
+**类别：** [通用逻辑][common-logic]、[服务相关][service-logic]
+
+**描述：** 等待 MDS 选主成功超时
+
+**如何解决：** 在创建集群物理池、逻辑池需要等待 MDS 选主成功之后执行，目前我们最长等待 20 秒。
+
+## 450000
+
+**类别：** [通用逻辑][common-logic]、[playground 相关][service-logic]
+
+**描述：** 未找到指定的 playground
+
+**如何解决：** 在删除 playground 时，需要指定 playground 的名称，用户可通过 `playground ls` 命令查看所有的 playground 列表，并指定相应的 playground 名称进行删除
+
+```shell
+$ curveadm playground ls
+```
+
+```shell
+Get Playground Status: [OK]
+
+Id  Name                           Create Time          Status
+--  ----                           -----------          ------
+1   playground-curvebs-1661257926  2022-08-23 20:32:09  Up 3 minutes
+2   playground-curvebs-1661258009  2022-08-23 20:33:32  Up About a minute
+```
+
+示例：
+
+```shell
+$ curveadm playground rm playground-curvebs-1661257926
+```
+
+## 500000
+
+**类别：** [预检][precheck]、[拓扑文件预检项][topology-precheck]
+
+**描述：** 拓扑文件中的 `s3.ak` 配置项是无效的
+
+**如何解决：** 若用户想要部署快照克隆服务，需确保拓扑文件中的 `s3.ak`、`s3.sk`、`s3.nos_address`、`s3.snapshot_bucket_name` 这 4 个 S3 相关配置有效且正确。若用户不使用快照克隆服务，可将拓扑文件中的这 4 个配置项全部删除即可
+
+拓扑文件示例：
+
+```yaml
+kind: curvebs
+global:
+  s3.ak: 0123456789abcdefghijklmnopqrstuv
+  s3.sk: abcdefghijklmnopqrstuv0123456789
+  s3.nos_address: nos-eastchina1.126.net
+  s3.snapshot_bucket_name: curve
+...
+```
+## 500001
+
+**类别：** [预检][precheck]、[拓扑文件预检项][topology-precheck]
+
+**描述：** 拓扑文件中的 `s3.sk` 配置项是无效的
+
+**如何解决：** 若用户想要部署快照克隆服务，需确保拓扑文件中的 `s3.ak`、`s3.sk`、`s3.nos_address`、`s3.snapshot_bucket_name` 这 4 个 S3 相关配置有效且正确。若用户不使用快照克隆服务，可将拓扑文件中的这 4 个配置项全部删除即可
+
+拓扑文件示例：
+
+```yaml
+kind: curvebs
+global:
+  s3.ak: 0123456789abcdefghijklmnopqrstuv
+  s3.sk: abcdefghijklmnopqrstuv0123456789
+  s3.nos_address: nos-eastchina1.126.net
+  s3.snapshot_bucket_name: curve
+...
+```
+
+## 500002
+
+**类别：** [预检][precheck]、[拓扑文件预检项][topology-precheck]
+
+**描述：** 拓扑文件中的 `s3.nos_addresss` 配置项是无效的
+
+**如何解决：** 若用户想要部署快照克隆服务，需确保拓扑文件中的 `s3.ak`、`s3.sk`、`s3.nos_address`、`s3.snapshot_bucket_name` 这 4 个 S3 相关配置有效且正确。若用户不使用快照克隆服务，可将拓扑文件中的这 4 个配置项全部删除即可
+
+拓扑文件示例：
+
+```yaml
+kind: curvebs
+global:
+  s3.ak: 0123456789abcdefghijklmnopqrstuv
+  s3.sk: abcdefghijklmnopqrstuv0123456789
+  s3.nos_address: nos-eastchina1.126.net
+  s3.snapshot_bucket_name: curve
+...
+```
+## 500003
+
+**类别：** [预检][precheck]、[拓扑文件预检项][topology-precheck]
+
+**描述：** 拓扑文件中的 `s3.snapshot_bucket_name` 配置项是无效的
+
+**如何解决：** 若用户想要部署快照克隆服务，需确保拓扑文件中的 `s3.ak`、`s3.sk`、`s3.nos_address`、`s3.snapshot_bucket_name` 这 4 个 S3 相关配置有效且正确。若用户不使用快照克隆服务，可将拓扑文件中的这 4 个配置项全部删除即可
+
+拓扑文件示例：
+
+```yaml
+kind: curvebs
+global:
+  s3.ak: 0123456789abcdefghijklmnopqrstuv
+  s3.sk: abcdefghijklmnopqrstuv0123456789
+  s3.nos_address: nos-eastchina1.126.net
+  s3.snapshot_bucket_name: curve
+...
+```
+
+## 501000
+
+**类别：** [预检][precheck]、[拓扑文件预检项][topology-precheck]
+
+**描述：** 拓扑文件中日志目录和数据目录必须为绝对路径
+
+**如何解决：** 用户需确保拓扑文件中 `log_dir`、`data_dir` 这 2 个目录配置项的值为绝对路径。用户可根据错误线索锁定哪一个配置项不符合要求，并对其进行修改，详见[CurveBS 重要配置项][curvebs-important-configure]、[CurveFS 重要配置项][curvefs-important-configure]
+
+示例：
+
+```yaml
+kind: curvefs
+global:
+  log_dir: /curvefs/logs/${service_role}  # 正确
+  data_dir: ~/data/${service_role}        # 错误
+...
+```
+
+## 501001
+
+**类别：** [预检][precheck]、[拓扑文件预检项][topology-precheck]
+
+**描述：** 拓扑文件中存在重复的数据目录
+
+**如何解决：** 用户需确保拓扑文件中 `data_dir` 配置项不能使用主机上相同的目录。用户可根据错误线索锁定哪一个配置项不符合要求，并对其进行修改，用户也可以参考集群的[拓扑模版][config-template]对其进行修改
+
+示例：
+
+```yaml
+kind: curvebs
+global:
+  variable:
+    machine1: server-host1
+    machine2: server-host2
+    machine3: server-host3
+
+etcd_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 2380
+    listen.client_port: 2379
+    data_dir: /tmp/${service_role}
+  deploy:
+    - host: ${machine1}  # 正确，该服务的数据目录为 server-host1 上的 /tmp/etcd
+    - host: ${machine2}  # 正确，该服务的数据目录为 server-host2 上的 /tmp/etcd
+    - host: ${machine3}  # 正确，该服务的数据目录为 server-host3 上的 /tmp/etcd
+
+chunkserver_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 82${format_replica_sequence}  # 8200, 8201, 8202
+    data_dir: /data/chunkserver
+    copysets: 100
+  deploy:
+    - host: ${machine1}  # 错误，该主机上的 3 个服务数据目录都为 server-host1 上的 /data/chunkserver
+      replica: 3
+    - host: ${machine2}  # 错误，该主机上的 3 个服务数据目录都为 server-host2 上的 /data/chunkserver
+      replica: 3
+    - host: ${machine3}  # 错误，该主机上的 3 个服务数据目录都为 server-host3 上的 /data/chunkserver
+      replica: 3
+```
+
+## 502000
+
+**类别：** [预检][precheck]、[拓扑文件预检项][topology-precheck]
+
+**描述：** 拓扑文件中存在重复的监听地址
+
+**如何解决：** 用户需确保拓扑文件中不存在重复的监听地址，一个监听地址是由服务监听 IP（`listen.ip`）和监听端口（`listen.*_port`）组合而成的。用户可根据错误线索锁定哪一个配置项不符合要求，并对其进行修改，用户也可以参考集群的[拓扑模版][config-template]对其进行修改
+
+示例：
+
+```yaml
+kind: curvebs
+global:
+  variable:
+    machine1: server-host1
+    machine2: server-host2
+    machine3: server-host3
+
+etcd_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 2380
+    listen.client_port: 2379
+  deploy:
+    - host: ${machine1}  # 正确，该服务监听地址为 server-host1:{2379,2380}
+    - host: ${machine2}  # 正确，该服务监听地址为 server-host2:{2379,2380}
+    - host: ${machine3}  # 正确，该服务监听地址为 server-host3:{2379,2380}
+...
+chunkserver_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 8200
+    ...
+  deploy:
+    - host: ${machine1}  # 错误，该主机上的 3 个服务的监听地址都为 server-host1:8200，存在冲突
+      replica: 3
+    ...
+...
+```
+
+## 503000
+
+**类别：** [预检][precheck]、[拓扑文件预检项][topology-precheck]
+
+**描述：** 拓扑文件中 etcd 至少需要 3 个服务实例
+
+**如何解决：** 用户需修改集群拓扑文件，确保拓扑文件中 etcd 的服务实例为 3 个以上，用户可参考集群的[拓扑模版][config-template]对其进行修改
+
+正确示例：
+
+> 该拓扑文件中存在 3 个 etcd 服务
+
+```yaml
+kind: curvebs
+global:
+  variable:
+    machine1: server-host1
+    machine2: server-host2
+    machine3: server-host3
+
+etcd_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 2380
+    listen.client_port: 2379
+  deploy:
+    - host: ${machine1}
+    - host: ${machine2}
+    - host: ${machine3}
+...
+```
+
+错误示例：
+
+> 该拓扑文件中只存在 2 个 etcd 服务
+
+```yaml
+kind: curvebs
+global:
+  variable:
+    machine1: server-host1
+    machine2: server-host2
+    machine3: server-host3
+
+etcd_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 2380
+    listen.client_port: 2379
+  deploy:
+    - host: ${machine1}
+    - host: ${machine2}
+...
+```
+
+## 503001
+
+**类别：** [预检][precheck]、[拓扑文件预检项][topology-precheck]
+
+**描述：** 拓扑文件中 mds 至少需要 3 个服务实例
+
+**如何解决：** 用户需修改集群拓扑文件，确保拓扑文件中 mds 的服务实例为 3 个以上，用户可参考集群的[拓扑模版][config-template]对其进行修改
+
+正确示例：
+
+> 该拓扑文件中存在 3 个 mds 服务
+
+```yaml
+kind: curvebs
+global:
+  variable:
+    machine1: server-host1
+    machine2: server-host2
+    machine3: server-host3
+
+mds_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 6700
+    listen.dummy_port: 7700
+  deploy:
+    - host: ${machine1}
+    - host: ${machine2}
+    - host: ${machine3}
+...
+```
+
+错误示例：
+
+> 该拓扑文件中只存在 2 个 mds 服务
+
+```yaml
+kind: curvebs
+global:
+  variable:
+    machine1: server-host1
+    machine2: server-host2
+    machine3: server-host3
+
+mds_services:
+  config:
+    listen.ip: ${service_host}
+    listen.port: 6700
+    listen.dummy_port: 7700
+  deploy:
+    - host: ${machine1}
+    - host: ${machine2}
+...
+```
+
+
+## 550000
+
+**类别：** [预检][precheck]、[拓扑文件预检项][topology-precheck]
+
+**描述：** 无效的时间
+
+**如何解决：** 我们在每台部署服务的主机上运行 `data +"%s"` 命令来获取当前主机的时间戳，在我们测试的几个发行版中该命令返回的都是以下格式的时间戳。
+
+```shell
+$ date +"%s"
+1661171289
+```
+
+## 550001
+
+**类别：** [预检][precheck]、[时间预检][date-precheck]
+
+**描述：** 部署服务的主机之间的最大时间差超过 30 秒
+
+**如何解决：**
+
+
+## 560000
+
+**类别：** [预检][precheck]、[服务预检][service-precheck]
+
+**描述：** 在 chunkserver 配置的数据目录（`data_dir`）中未发现 chunkfile pool
+
+**如何解决：** 为减少写 IO 放大，我们需要提前生成一批固定大小并预写过的 chunk 文件，详见 [chunkfile pool 设计][chunkfilepool]。用户可根据使用需求选择以下两种解决方案的任意一种：
+
+##### 方案一： 关闭 chunkfile pool
+
+对于没有性能要求的测试或体验用户，可以直接关闭 chunkfile pool，用户只需要在 chunkserver 服务的配置项中设置 `chunkfilepool.enable_get_chunk_from_pool` 为 false，并提交对应的集群拓扑即可：
+
+```shell
+$ vim topology.yaml
+```
+
+```yaml
+chunkserver_services:
+  config:
+    data_dir: /data/chunkserver${service_replicas_sequence}
+    chunkfilepool.enable_get_chunk_from_pool: false  # 关闭 chunkfile pool
+    ...
+  deploy:
+    - host: ${machine1}
+      replicas: 3
+    ...
+```
+
+```shell
+$ curveadm commit topology.yaml
+```
+
+##### 方案二： 格式化磁盘以生成 chunkfile pool
+
+详见[格式化磁盘][format-disk]。**特别需要注意**的是，`format` 命令只是启动后台格式化进程，并不意味着格式化已完成，用户需要通过 `curveadm format --status` 命令查看所有的磁盘都已格式化完成，再进行部署。
+
+## 570000
+
+**类别：** [预检][precheck]、[客户端预检][others-precheck]
+
+**描述：** CurveFS 客户端配置文件中的 `s3.ak` 配置项是无效的
+
+**如何解决：** 如果你以 S3 作为 CurveFS 的数据存储后端，需要在客户端的配置文件中指定对应 S3 的相关配置，请确保 `s3.ak`、`s3.sk`、`s3.endpoint`、`s3.bucket_name` 这 4 个配置项有效且正确
+
+client.yaml 示例：
+
+```yaml
+kind: curvefs
+s3.ak: 0123456789abcdefghijklmnopqrstuv
+s3.sk: abcdefghijklmnopqrstuv0123456789
+s3.endpoint: nos-eastchina1.126.net
+s3.bucket_name: curve
+...
+```
+
+## 570001
+
+**类别：** [预检][precheck]、[客户端预检][others-precheck]
+
+**描述：** CurveFS 客户端配置文件中的 `s3.sk` 配置项是无效的
+
+**如何解决：** 如果你以 S3 作为 CurveFS 的数据存储后端，需要在客户端的配置文件中指定对应 S3 的相关配置，请确保 `s3.ak`、`s3.sk`、`s3.endpoint`、`s3.bucket_name` 这 4 个配置项有效且正确
+
+client.yaml 示例：
+
+```yaml
+kind: curvefs
+s3.ak: 0123456789abcdefghijklmnopqrstuv
+s3.sk: abcdefghijklmnopqrstuv0123456789
+s3.endpoint: nos-eastchina1.126.net
+s3.bucket_name: curve
+...
+```
+
+## 570002
+
+**类别：** [预检][precheck]、[客户端预检][others-precheck]
+
+**描述：** CurveFS 客户端配置文件中的 `s3.endpoint` 配置项是无效的
+
+**如何解决：** 如果你以 S3 作为 CurveFS 的数据存储后端，需要在客户端的配置文件中指定对应 S3 的相关配置，请确保 `s3.ak`、`s3.sk`、`s3.endpoint`、`s3.bucket_name` 这 4 个配置项有效且正确
+
+client.yaml 示例：
+
+```yaml
+kind: curvefs
+s3.ak: 0123456789abcdefghijklmnopqrstuv
+s3.sk: abcdefghijklmnopqrstuv0123456789
+s3.endpoint: nos-eastchina1.126.net
+s3.bucket_name: curve
+...
+```
+
+## 570003
+
+**类别：** [预检][precheck]、[客户端预检][others-precheck]
+
+**描述：** CurveFS 客户端配置文件中的 `s3.bucket_name` 配置项是无效的
+
+**如何解决：** 如果你以 S3 作为 CurveFS 的数据存储后端，需要在客户端的配置文件中指定对应 S3 的相关配置，请确保 `s3.ak`、`s3.sk`、`s3.endpoint`、`s3.bucket_name` 这 4 个配置项有效且正确
+
+client.yaml 示例：
+
+```yaml
+kind: curvefs
+s3.ak: 0123456789abcdefghijklmnopqrstuv
+s3.sk: abcdefghijklmnopqrstuv0123456789
+s3.endpoint: nos-eastchina1.126.net
+s3.bucket_name: curve
+...
+```
+
+## 590000
+
+**类别：** [预检][precheck]、[其他预检项][others-precheck]
+
+**描述：** 相关主机上未安装 Docker
+
+**如何解决：** 用户可根据错误线索来确定哪台主机未安装 Docker，并登录相应主机安装 Docker，详见[安装依赖](install-requirements)
+
+## 590001
+
+**类别：** [预检][precheck]、[其他预检项][others-precheck]
+
+**描述：** Docker 守护进程未运行
+
+**如何解决：** 安装 Docker 后需确保 Docker 服务端的守护进程处于运行状态，你可以通过以下命令来启动 Docker:
+
+```shell
+$ sudo systemctl enable docker
+$ sudo systemctl start docker
+```
+
+详见[启动 Docker][start-docker-daemon]
+
+## 590002
+
+**类别：** [预检][precheck]、[其他预检项][others-precheck]
+
+**描述：** 磁盘空间已满
+
+**如何解决：** 用户可根据错误线索来确定哪台主机哪块磁盘没有剩余空间，登录相应主机删除不必要的文件以腾出空间
+
+## 600000
+
+**类别：** [命令执行][execute-command]、[命令通用][command-common]
+
+**描述：** 命令执行超时
+
+**如何解决：** 用户可修改 [CurveAdm 配置文件][curveadm-configure]中的 `timeout` 配置项来增大命令执行的超时时间
+
+## 600001
+
+**类别：** [命令执行][execute-command]、[命令通用][command-common]
+
+**描述：** 读取文件失败
+
+**如何解决：** 命令在执行的时候，需要一些读取文件的操作，用户可根据错误码报告的错误线索以及查看对应的日志文件来确定问题，并进行相关的修改。
+
+一般这类错误不常出现，我们已知的报告该错误码的场景有以下几个：
+* 磁盘空间已满
+
+## 600002
+
+**类别：** [命令执行][execute-command]、[命令通用][command-common]
+
+**描述：** 写入文件失败
+
+**如何解决：** 命令在执行的时候，需要一些写入文件的操作，用户可根据错误码报告的错误线索以及查看对应的日志文件来确定问题，并进行相关的修改。
+
+一般这类错误不常出现，我们已知的报告该错误码的场景有以下几个：
+* 磁盘空间已满
+
+## 600003
+
+**类别：** [命令执行][execute-command]、[命令通用][command-common]
+
+**描述：** 编译正则表达式失败
+
+**如何解决：** 这个错误属于代码逻辑错误，正常情况下不应该报告给用户，若用户收到该错误码，代表该版本 CurveAdm 代码逻辑存在问题，用户可通过以下 2 种方法反馈该问题：
+
+* [提交 issue][issue]
+
+* 通过扫描以下二维码，添加微信群
+
+<img src="https://raw.githubusercontent.com/opencurve/curve/master/docs/images/curve-wechat.jpeg" width="330px" height="400px">
+
+## 600004
+
+**类别：** [命令执行][execute-command]、[命令通用][command-common]
+
+**描述：** 构建命令模版失败
+
+**如何解决：** 这个错误属于代码逻辑错误，正常情况下不应该报告给用户，若用户收到该错误码，代表该版本 CurveAdm 代码逻辑存在问题，用户可通过以下 2 种方法反馈该问题：
+
+* [提交 issue][issue]
+
+* 通过扫描以下二维码，添加微信群
+
+<img src="https://raw.githubusercontent.com/opencurve/curve/master/docs/images/curve-wechat.jpeg" width="330px" height="400px">
+
+
+
+
+
+## 610000
+
+**类别：** [命令执行][execute-command]、[SSH 连接][ssh-connection]
+
+**描述：** 利用 SSH 连接下载远端主机文件到本地失败
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 610001
+
+**类别：** [命令执行][execute-command]、[SSH 连接][ssh-connection]
+
+**描述：** 利用 SSH 连接上传文件到远端主机失败
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 610002
+
+**类别：** [命令执行][execute-command]、[SSH 连接][ssh-connection]
+
+**描述：** 通过 SSH 连接交互式地登录远端主机失败
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620000
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 利用 sed 编辑文件失败 (*sed*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620001
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 获取当前目录文件列表失败 (*ls*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620002
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 创建目录失败 (*mkdir*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620003
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 删除文件或目录失败 (*rm*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620004
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 重命名文件或目录失败 (*mv*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620005
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 复制文件和目录失败 (*cp*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620006
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 改变文件权限失败 (*chmod*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620007
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 获取文件状态失败 (*stat*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620008
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 打印文件内容失败 (*cat*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620009
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 创建 Linux 文件系统失败 (*mkfs*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620010
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 挂载一个 Linux 文件系统失败 (*mount*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620011
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 卸载一个 Linux 文件系统失败 (*umount*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620012
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 查询哪一个进程正在使用文件失败 (*fuser*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620013
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 获取磁盘空间使用量失败 (*df*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620014
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 获取所有块设备失败 (*lsblk*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620015
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 获取连接信息失败 (*ss*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620016
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 发送 ICMP ECHO 请求到目标主机失败 (*ping*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620017
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 传送数据到服务器或从服务器获取数据失败 (*curl*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620018
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 获取系统时间失败 (*date*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620019
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 获取系统信息失败 (*uname*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620020
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 获取内核模块信息失败 (*modinfo*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620021
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 从 Linux 内核加载模块失败 (*modinfo*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620022
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 获取主机名失败 (*hostname*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620023
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 压缩或解压文件失败 (*tar*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620024
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 安装或者移除 debian 包失败 (*dpkg*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620025
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 安装或者移除 rpm 包失败 (*rpm*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620026
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 拷贝文件到远端主机失败 (*rpm*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620998
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 执行一个 bash 脚本失败 (*bash script.sh*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 620999
+
+**类别：** [命令执行][execute-command]、[shell 命令][shell-command]
+
+**描述：** 运行一个 bash 命令失败 (*bash -c*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630000
+
+**类别：** [命令执行][execute-command]、[shell 命令][docker-command]
+
+**描述：** 获取 docker 信息失败 (*docker info*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630001
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 拉取镜像失败 (*docker pull IMAGE*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630002
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 创建容器失败 (*docker create IMAGE*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630003
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 启动容器失败 (*docker start CONTAINER*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630004
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 停止容器失败 (*docker stop CONTAINER*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630005
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 重启容器失败 (*docker restart CONTAINER*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630006
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 等待容器停止失败 (*docker wait CONTAINER*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630007
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 移除容器失败 (*docker rm CONTAINER*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630008
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 获取所有容器失败 (*docker ps*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630009
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 在容器内运行命令失败 (*docker exec CONTAINER COMMAND*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630010
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 从容器内拷贝文件失败 (*docker cp CONTAINER:SRC_PATH DEST_PATH*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630011
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 拷贝文件进容器失败 (*docker cp SRC_PATH CONTAINER:DEST_PATH*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630012
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 获取容器底层信息失败 (*docker inspect ID*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 630013
+
+**类别：** [命令执行][execute-command]、[docker 命令][docker-command]
+
+**描述：** 获取容器日志失败 (*docker logs ID*)
+
+**如何解决：** 详见命令执行类错误码[通用解决方法][execute-command-common-solution]
+
+## 690000
+
+**类别：** [命令执行][execute-command]、[其他命令][others-command]
+
+**描述：** 在容器内启动 crontab 定时任务失败
+
+**如何解决：** 我们会在每个服务容器内启动一个 crontab 定时任务来定时上报集群信息，包括集群 UUID 以及集群使用量，来帮助 curve 团队更好地了解用户及改进服务，具体参见 [CurveBS/CurveFS 重要配置项][important-configure] 中的 `report_usage` 配置项。
+
+出现这类错误一般是对应的服务容器不正常或异常退出，导致在容器内执行命令失败导致的，用户可查看对应的服务容器的日志，排除服务异常的原因后，重新运行 `deploy、start、restart...` 等命令。
+
+## 999999
+
+**类别：** 暂无
+
+**描述：**  未知错误
+
+**如何解决：** 未知的错误类型。当你遇到这个错误码时，代表错误并没有被我们捕捉到，正处于逃逸状态，你可以通过以下几种方法来提交逃逸的错误现场，来帮助 CurveAdm 变得更好：
+
+* [提交 issue][issue]
+
+* 通过扫描以下二维码，添加微信群
+
+<img src="https://raw.githubusercontent.com/opencurve/curve/master/docs/images/curve-wechat.jpeg" width="330px" height="400px">
+
+
+
+
+
+[init]: s
+[database]: s
+[configure]: ss
+[curveadm-configure]: https://github.com/opencurve/curveadm/wiki/install-curveadm#curveadm-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6
+[topology]: ss
+[format-configure]: ss
+
+[precheck]: sss
+[others-precheck]: sss
+[service-precheck]: sss
+[date-precheck]: sss
+
+[format-disk]: https://github.com/opencurve/curveadm/wiki/curvebs-cluster-deployment#%E7%AC%AC-4-%E6%AD%A5%E6%A0%BC%E5%BC%8F%E5%8C%96%E7%A3%81%E7%9B%98
+[chunkfilepool]: https://github.com/opencurve/curve/blob/master/docs/cn/chunkserver_design.md#224-chunkfilepool
+
+[curvebs-client-options]: sss
+[curvefs-client-options]: sss
+
+[install-requirements]: https://github.com/opencurve/curveadm/wiki/install-curveadm#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96
+
+[start-docker-daemon]: https://yeasy.gitbook.io/docker_practice/install/ubuntu#qi-dong-docker
+
+[precheck]: https://github.com/opencurve/curveadm/wiki/precheck
+
+[client-common-options]: sss
+[playground-options]: sss
+[topology-configure]: sss
+
+[]
+
+[map]: https://github.com/opencurve/curveadm/wiki/curvebs-client-deployment#%E7%AC%AC-4-%E6%AD%A5%E6%98%A0%E5%B0%84-curvebs-%E5%8D%B7
+[mount]: https://github.com/opencurve/curveadm/wiki/curvefs-client-deployment#%E7%AC%AC-4-%E6%AD%A5%E6%8C%82%E8%BD%BD-curvefs-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F
+
+[configure-common]: sss
+[variable]: https://github.com/opencurve/curveadm/wiki/topology#%E5%8F%98%E9%87%8F
+[hosts-configure]: sss
+[hosts]: sss
+
+[clean]: https://github.com/opencurve/curveadm/wiki/maintain-curve#%E6%B8%85%E7%90%86%E9%9B%86%E7%BE%A4
+[cluster-options]: sss
+[command-options]: sss
+[command-common]: sss
+[important-configure]: https://github.com/opencurve/curveadm/wiki/topology#curvebs-%E9%87%8D%E8%A6%81%E9%85%8D%E7%BD%AE%E9%A1%B9
+[others-command]: sss
+[docker-command]: sss
+[ssh-connection]: sss
+[shell-command]: sss
+[execute-command]: asss
+[execute-command-common-solution]: aaaa
+[database-common-solution]: aaaa
+[issue]: https://github.com/opencurve/curveadm/issues
+[topology]: https://github.com/opencurve/curveadm/wiki/topology
+[replicas]: https://github.com/opencurve/curveadm/wiki/topology#replicas
+
+[client-configure]: sss
+
+[scale-curve]: https://github.com/opencurve/curveadm/wiki/scale-curve
+[migrate-curve]: https://github.com/opencurve/curveadm/wiki/migrate-curve
+[curvebs-client-configure]: https://github.com/opencurve/curveadm/wiki/curvebs-client-deployment#%E7%AC%AC-3-%E6%AD%A5%E5%87%86%E5%A4%87%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6
+[curvefs-client-configure]: https://github.com/opencurve/curveadm/wiki/curvefs-client-deployment#%E7%AC%AC-3-%E6%AD%A5%E5%87%86%E5%A4%87%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6
+[common-logic]: sss
+[hosts-logic]: sss
+[service-logic]: sss
+[curvefs-client-logic]: sss
+[curvebs-client-logic]: sss
+[polarfs-logic]: sss
+[playground-logic]: sss
+[add-and-checkout]: https://github.com/opencurve/curveadm/wiki/curvebs-cluster-deployment#%E7%AC%AC-6-%E6%AD%A5%E6%B7%BB%E5%8A%A0%E9%9B%86%E7%BE%A4%E5%B9%B6%E5%88%87%E6%8D%A2%E9%9B%86%E7%BE%A4
+[topology-precheck]: sss
+[curvebs-important-configure]: https://github.com/opencurve/curveadm/wiki/topology#curvebs-%E9%87%8D%E8%A6%81%E9%85%8D%E7%BD%AE%E9%A1%B9
+[curvefs-important-configure]: https://github.com/opencurve/curveadm/wiki/topology#curvefs-%E9%87%8D%E8%A6%81%E9%85%8D%E7%BD%AE%E9%A1%B9
+[config-template]: https://github.com/opencurve/curveadm/tree/master/configs

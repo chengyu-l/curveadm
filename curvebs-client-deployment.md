@@ -115,9 +115,9 @@ Get Client Status: [OK]
 
 Id            Kind     Host          Container Id  Status       Aux Info
 --            ----     ----          ------------  ------       --------
-362d538778ad  curvebs  server-host1  cfa00fd01ae8  Up 36 hours  {"user":"curve","volume":"/test1"}
-b0d56cfaad14  curvebs  server-host2  c0301eff2af0  Up 36 hours  {"user":"curve","volume":"/test2"}
-c700e1f6acab  curvebs  server-host3  52554173a54f  Up 36 hours  {"user":"curve","volume":"/test3"}
+362d538778ad  curvebs  client-host1  cfa00fd01ae8  Up 36 hours  {"user":"curve","volume":"/test1"}
+b0d56cfaad14  curvebs  client-host2  c0301eff2af0  Up 36 hours  {"user":"curve","volume":"/test2"}
+c700e1f6acab  curvebs  client-host3  52554173a54f  Up 36 hours  {"user":"curve","volume":"/test3"}
 ```
 
 > 📢 **注意：**
