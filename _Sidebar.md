@@ -57,6 +57,7 @@
 ===
 * [FAQ](FAQ)
 * [部署 tgt](others#部署-tgt)
+* [部署 PolarFS](others#部署-polarfs)
 * [升级 CurveAdm](others#升级-curveadm)
 * [问题与反馈](others#问题与反馈)
 * [参与 CurveAdm 的开发](others#参与-curveadm-的开发)

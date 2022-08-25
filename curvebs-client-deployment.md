@@ -97,6 +97,7 @@ $ curveadm map <volume-user>:<volume-name> --host <host> -c client.yaml --create
 * `--host`: 将卷挂载到指定主机，用户可自行选择，请确保该主机已被导入
 * `--create`：当卷不存在时，则自行创建
 * `--size`: 指定创建卷的大小，默认为 `10GB`
+* `-c`: 指定客户端配置文件
 
 当用户映射卷成功后，在**相应的主机上**即能看到 CurveBS 卷对应的 nbd 设备：
 

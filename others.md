@@ -19,6 +19,14 @@
   * [Windows][windows-initiator]
   * [MacOS][macos-initiator]
 
+部署 PolarFS
+---
+
+如果你有使用 [PolarDB][polardb] 的需求，并且对性能有较高要求，可以部署 [Curve 版 PolarFS][polarfs]：
+
+* 首先你需要部署一个 CurveBS 集群，详见[部署 CurveBS 集群][curvebs-cluster-deployment]
+* 再部署 Curve 版 PolarFS， 详见[部署 PolarFS][curve-polarfs-deployment]
+
 升级 CurveAdm
 ---
 
@@ -67,3 +75,6 @@ CurveAdm 的整体实现逻辑较简单清晰，并具有较好的模块抽象�
 [linux-initiator]: https://www.unixmen.com/attach-iscsi-target-disks-linux-servers/
 [windows-initiator]: https://jingyan.baidu.com/article/e4511cf37feade2b845eaff8.html
 [macos-initiator]: https://apple.stackexchange.com/questions/324745/iscsi-mounts-in-macos
+[curve-polarfs-deployment]: https://github.com/opencurve/curveadm/wiki/curve-polarfs-deployment
+[polardb]: https://github.com/ApsaraDB/PolarDB-for-PostgreSQL
+[polarfs]: https://github.com/opencurve/PolarDB-FileSystem
