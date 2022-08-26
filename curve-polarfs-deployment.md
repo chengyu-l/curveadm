@@ -92,51 +92,20 @@ $ curveadm polarfs install --host polarfs-client -c client.yaml
 第 5 步：创建 curve 卷
 ---
 
-我们在每一个服务容器内内置了 `curve_ops_tool` 工具，该工具可用于创建卷。用户需要进入任一服务容器内，使用该工具创建实际存储 PolarFS 数据的 curve 卷
-
-### 1. 进入任一集群服务容器内
-
-用户可通过 `curveadm status` 命令获取所有服务的 ID，并通过 `curveadm enter` 命令选择任一容器进入
+我们在主机上安装了 `curve` 工具，该工具可用于创建卷，用户需要使用该工具创建实际存储 PolarFS 数据的 curve 卷
 
 ```shell
-$ curveadm status
+$ curve create --filename /volume --user my --length 10 --stripeUnit 16384 --stripeCount 64
 ```
 
-```shell
-Get Service Status: [OK]
+用户可通过 `curve create -h` 命令查看创建卷的详细说明。上面的列子中，我们创建了一个拥有以下属性的卷：
+ * 卷名为 `/volume`
+ * 所属用户为 `my`
+ * 大小为 `10GB`
+ * 条带大小为 `16KB`
+ * 条带个数为 `64`
 
-cluster name      : my-cluster
-cluster kind      : curvebs
-cluster mds addr  : 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
-cluster mds leader: 10.0.1.1:6700 / 505da008b59c
-
-Id            Role           Host          Replicas  Container Id  Status
---            ----           ----          -------   ------------  ------
-c9570c0d0252  etcd           server-host1  1/1       ced84717bf4b  Up 45 hours
-493b7831907c  etcd           server-host2  1/1       907f8b84f527  Up 45 hours
-8438cc5ecb52  etcd           server-host3  1/1       44eca4798424  Up 45 hours
-505da008b59c  mds            server-host1  1/1       37c05bbb39af  Up 45 hours
-e7bfb934182b  mds            server-host2  1/1       044b56281928  Up 45 hours
-1b322781339c  mds            server-host3  1/1       b00481b9872d  Up 45 hours
-<replicas>    chunkserver    server-host1  3/3       <replicas>    RUNNING
-<replicas>    chunkserver    server-host2  3/3       <replicas>    RUNNING
-<replicas>    chunkserver    server-host3  3/3       <replicas>    RUNNING
-2912bbdbcb48  snapshotclone  server-host1  1/1       8b7a14b872ff  Up 45 hours
-b862ef6720ed  snapshotclone  server-host2  1/1       8e2a4b9e16b4  Up 45 hours
-ed4533e903d9  snapshotclone  server-host3  1/1       a35c30e3143d  Up 45 hours
-```
-
-```shell
-$ curveadm enter c9570c0d0252
-```
-
-### 2. 创建 curve 卷
-
-```shell
-$ curve_ops_tool create -fileName=/volume -userName=my -fileLength=20
-```
-
-用户可通过 `curve_ops_tool create -example` 命令查看创建卷的详细说明。上面的列子中，我们创建了卷名为 `/volume`，其所属用户为 `my` 并且大小为 `20GB` 的一个 curve 卷。
+**特别需要注意的是**，在数据库场景下，我们强烈建议使用条带卷，只有这样才能充分发挥 Curve 的性能优势，而 `16384 * 64` 的条带设置是目前最优的条带设置。
 
 第 6 步：格式化 curve 卷
 ---
