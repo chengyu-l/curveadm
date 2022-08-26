@@ -1,4 +1,4 @@
-# 400000
+## 400000
 
 **类别：** [通用逻辑][common-logic]、[主机相关][hosts-logic]
 
@@ -38,8 +38,8 @@ global:
 命令行中使用主机示例：
 
 ```shell
-$ curveadm curveadm mount /fs1 test1 --host client-host   # 正确，client-host 主机已被导入
-$ curveadm curveadm mount /fs1 test1 --host client-host2  # 错误，client-host 主机未被导入
+$ curveadm mount /fs1 test1 --host client-host   # 正确，client-host 主机已被导入
+$ curveadm mount /fs1 test1 --host client-host2  # 错误，client-host2 主机未被导入
 ```
 
 ## 410001
