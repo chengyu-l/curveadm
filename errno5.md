@@ -1083,6 +1083,7 @@ $ sudo systemctl start docker
 [network-precheck]: https://github.com/opencurve/curveadm/wiki/errno#子类
 [date-precheck]: https://github.com/opencurve/curveadm/wiki/errno#子类
 [service-precheck]: https://github.com/opencurve/curveadm/wiki/errno#子类
+[others-precheck]: https://github.com/opencurve/curveadm/wiki/errno#子类
 [command-common]: https://github.com/opencurve/curveadm/wiki/errno#子类
 [others-command]: https://github.com/opencurve/curveadm/wiki/errno#子类
 [docker-command]:  https://github.com/opencurve/curveadm/wiki/errno#子类
