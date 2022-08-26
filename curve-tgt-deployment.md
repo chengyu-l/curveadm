@@ -2,10 +2,13 @@
 ===
 
 * [第 1 步：环境准备](#第-1-步环境准备)
-* [第 2 步：准备客户端配置文件](#第-2-步准备客户端配置文件)
-* [第 3 步：添加 target](#第-3-步添加-target)
-* [第 4 步：显示所有 target](#第-4-步显示所有-target)
+* [第 2 步：导入主机](#第-2-步导入主机)
+* [第 3 步：准备客户端配置文件](#第-3-步准备客户端配置文件)
+* [第 4 步：启动 tgtd 守护进程](#第-4-步启动-tgtd-守护进程)
+* [第 5 步：添加 target](#第-5-步添加-target)
+* [第 6 步：显示所有 target](#第-6-步显示所有-target)
 * [其他：删除 target ](#其他删除-target)
+* [其他：停止 tgtd 守护进程](#其他停止-tgtd-守护进程)
 
 第 1 步：环境准备
 ---
@@ -13,7 +16,34 @@
 * [软硬件环境需求](install-curveadm#软硬件环境需求)
 * [安装依赖](install-curveadm#安装依赖)
 
-第 2 步：准备客户端配置文件
+第 2 步：导入主机
+---
+
+用户需导入部署 target 的主机列表，详见[主机管理][hosts]。
+
+### 1. 准备主机列表
+
+```shell
+$ vim hosts.yaml
+```
+
+```yaml
+global:
+  user: curve
+  ssh_port: 22
+  private_key_file: /home/curve/.ssh/id_rsa
+
+hosts:
+  - host: target-host
+    hostname: 10.0.1.1
+```
+
+### 2. 导入主机列表
+```shell
+$ curveadm hosts commit hosts.yaml
+```
+
+第 3 步：准备客户端配置文件
 ---
 
 由于 [curve-tgt][curve-tgt] 对接的是 CurveBS 客户端中的 [NEBD-Part2][nebd-design] 服务，
@@ -24,10 +54,7 @@ $ vim client.yaml
 ```
 
 ```shell
-user: curve
-host: 10.0.1.1
-ssh_port: 22
-private_key_file: /home/curve/.ssh/id_rsa
+kind: curvebs
 container_image: opencurvedocker/curvebs:v1.2
 mds.listen.addr: 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
 log_dir: /home/curve/curvebs/logs/client
@@ -48,22 +75,34 @@ log_dir: /home/curve/curvebs/logs/client
 > ```shell
 > $ curveadm status
 > Get Service Status: [OK]
-> 
-> cluster name    : my-cluster
-> cluster kind    : curvebs
-> cluster mds addr: 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
+>
+> cluster name      : my-cluster
+> cluster kind      : curvebs
+> cluster mds addr  : 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
+> cluster mds leader: 10.0.1.1:6700 / 505da008b59c
 > ...
 > ```
 
-第 3 步：添加 target
+第 4 步：启动 tgtd 守护进程
 ---
 
 ```shell
-$ curveadm target add <user>:<volume-name> -c client.yaml --create --size 10GB
+$ curveadm target start --host target-host -c client.yaml
+```
+
+* `--host`: 在指定主机上启动 `tgtd` 守护进程
+* `-c`: 指定 CurveBS 客户端配置文件
+
+第 5 步：添加 target
+---
+
+```shell
+$ curveadm target add <user>:<volume-name> --host target-host --create --size 10GB
 ```
 
 * `<user>`: 该卷所属用户名，用户可自行定义
 * `<volume-name>`: 卷名，用户可自行定义
+* `--host`: 将 target 添加到对应主机上的 tgtd 中
 * `--create`：当卷不存在时，则自行创建
 * `--size`: 指定创建卷的大小，默认为 `10GB`
 
@@ -77,18 +116,17 @@ $ curveadm target add <user>:<volume-name> -c client.yaml --create --size 10GB
 > :bulb: **提醒：**
 >
 > 目前 target 是通过 SSH 远程添加的。在相应的机器上，
-> 我们会检查是否已存在 [NEBD-part2][nebd-design] 和 [tgtd][curve-tgt] 服务，如若没有，我们会自动创建相应容器并启动。
 
 ### 示例
 ```shell
 $ curveadm target add curve:/test -c client.yaml --create
 ```
 
-第 4 步：显示所有 target
+第 6 步：显示所有 target
 ---
 
 ```shell
-$ curveadm target list -c client.yaml
+$ curveadm target list --host target-host
 ```
 
 CurveAdm 会显示 target id、target name、对应的 CurveBS 卷、portal 等信息：
@@ -111,13 +149,21 @@ Tid  Target Name                                                       Store    
 ---
 
 ```shell
-$ curveadm target rm TID [OPTION] -c client.yaml
-``` 
+$ curveadm target rm TID [OPTION] --host target-host
+```
 
 > :bulb: **提醒：**
 >
 > TID 可以通过 `curveadm target list` 命令查看。
 
+其他：停止 tgtd 守护进程
+---
+
+```shell
+$ curveadm target stop --host target-host
+```
+
+[hosts]: https://github.com/opencurve/curveadm/wiki/hosts
 [curve-tgt]: https://github.com/opencurve/curve-tgt
 [nebd-design]: https://github.com/opencurve/curve/blob/master/docs/cn/nebd.md
 [important-config]: https://github.com/opencurve/curveadm/wiki/topology#curvebs-重要配置项

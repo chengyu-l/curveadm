@@ -83,7 +83,7 @@ mds.listen.addr: 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
 ---
 
 ```shell
-$ curveadm polarfs install --host polarfs-client -c client.yaml
+$ curveadm polarfs install --host polarfs-host -c client.yaml
 ```
 
 * `--host`: 将 polarfs 安装到指定主机，用户可自行选择，请确保该主机已被导入
@@ -130,7 +130,7 @@ $ sudo /usr/local/polarstore/pfsd/bin/start_pfsd.sh -p pool@@volume_user_
 ---
 
 ```shell
-$ curveadm polarfs uninstall --host polarfs-client
+$ curveadm polarfs uninstall --host polarfs-host
 ```
 
 [hosts]: https://github.com/opencurve/curveadm/wiki/hosts
