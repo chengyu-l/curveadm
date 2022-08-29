@@ -15,6 +15,10 @@
 
 * [安装 CurveAdm](install-curveadm#安装-curveadm)
 
+> 📢 **注意：**
+>
+> 目前 CurveAdm 只适配 `Debian10` 操作系统，未测试其他操作系统
+
 第 2 步：导入主机
 ---
 
