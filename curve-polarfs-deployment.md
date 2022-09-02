@@ -87,7 +87,7 @@ mds.listen.addr: 10.0.1.1:6700,10.0.1.2:6700,10.0.1.3:6700
 ---
 
 ```shell
-$ curveadm polarfs install --host polarfs-host -c client.yaml
+$ curveadm pfs install --host polarfs-host -c client.yaml
 ```
 
 * `--host`: 将 polarfs 安装到指定主机，用户可自行选择，请确保该主机已被导入
