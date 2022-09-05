@@ -241,4 +241,4 @@ $ curvefs_tool status
 [curvefs-topology]: https://github.com/opencurve/curveadm/wiki/topology#curvefs-集群拓扑
 [precheck]: https://github.com/opencurve/curveadm/wiki/precheck
 [errno]: https://github.com/opencurve/curveadm/wiki/errno
-[replicas]: https://github.com/opencurve/curveadm/wiki/topology#replica
+[replicas]: https://github.com/opencurve/curveadm/wiki/topology#replicas
