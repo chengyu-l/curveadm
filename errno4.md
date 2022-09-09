@@ -38,8 +38,8 @@ global:
 命令行中使用主机示例：
 
 ```shell
-$ curveadm mount /fs1 test1 --host client-host   # 正确，client-host 主机已被导入
-$ curveadm mount /fs1 test1 --host client-host2  # 错误，client-host2 主机未被导入
+$ curveadm mount /fs1 /mnt/test1 --host client-host   # 正确，client-host 主机已被导入
+$ curveadm mount /fs1 /mnt/test1 --host client-host2  # 错误，client-host2 主机未被导入
 ```
 
 ## 410001
