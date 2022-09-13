@@ -105,7 +105,7 @@ data_dir: /data/curvefs
 ---
 
 ```shell
-$ sudo curveadm mount <curvefs-name> <mount-point> --host <host> -c client.yaml
+$ curveadm mount <curvefs-name> <mount-point> --host <host> -c client.yaml
 ```
 
 * `<curvefs-name>`: 文件系统名，用户可自行定义
@@ -140,14 +140,14 @@ d700e1f6acab  curvefs  client-host3  62554173a54f  Up 36 hours  {"fsname":"/test
 
 ### 示例
 ```shell
-$ sudo curveadm mount /test /mnt/test --host client-host -c client.yaml
+$ curveadm mount /test /mnt/test --host client-host -c client.yaml
 ```
 
 其他：卸载文件系统
 ---
 
 ```shell
-$ sudo curveadm umount <mount-point> --host client-host
+$ curveadm umount <mount-point> --host client-host
 ```
 
 [hosts]: https://github.com/opencurve/curveadm/wiki/hosts
