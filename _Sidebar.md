@@ -46,6 +46,7 @@
 * [升级服务](upgrade-curve)
 * [迁移服务](migrate-curve)
 * [扩容集群](scale-curve)
+* [[草稿]: 升级集群以支持 poolset](poolset)
 
 错误码
 ===
