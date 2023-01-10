@@ -228,6 +228,12 @@ mds_services:
 
 ### replicas
 
+
+> :bulb: **提醒：**
+>
+> 这里的replicas不代表存储池的副本数，而是表示该节点上部署的同类进程的数量，比如chunkserver进程数量。
+> 这个变量的命名需要修改以更加清晰的表示其含义（可能用instances或其他更合适），问题参见：https://github.com/opencurve/curveadm/issues/146
+
 当我们需要在单台机器上部署多个同一类型的服务实例时，可利用 `replicas` 复制服务特性来简化我们的拓扑文件：
 
 ```yaml
