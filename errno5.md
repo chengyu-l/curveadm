@@ -354,7 +354,7 @@ chunkserver_services:
 
 **描述：** 拓扑文件中 snapshotclone 服务至少需要 3 个服务实例
 
-**如何解决：** 用户需修改集群拓扑文件，确保拓扑文件中 snapshotclone 的服务实例为 3 个以上，用户可参考集群的[拓扑模版][config-template]对其进行修改。若永不需要部署快照克隆服务，可以直接将整个 `snapshotclone_services` 区块删除，也可通过该预检
+**如何解决：** 用户需修改集群拓扑文件，确保拓扑文件中 snapshotclone 的服务实例为 3 个以上，用户可参考集群的[拓扑模版][config-template]对其进行修改。若永不需要部署快照克隆服务，可以直接将整个 `snapshotclone_services` 区块删除，也可通过该预检，如果不需要部署snapshotclone服务，在执行部署命令的时候需要加上skip参数：`curveadm deploy --skip snapshotclone`
 
 正确示例：
 
