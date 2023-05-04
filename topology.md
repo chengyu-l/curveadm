@@ -275,7 +275,7 @@ CurveBS 集群拓扑文件由以下 5 个区块组成：
 ```yaml
 kind: curvebs
 global:
-  container_image: opencurvedocker/curvebs:v1.2
+  container_image: opencurvedocker/curvebs:v1.2.6
   log_dir: ${home}/logs/${service_role}${service_replicas_sequence}
   data_dir: ${home}/data/${service_role}${service_replicas_sequence}
   s3.ak: <>
