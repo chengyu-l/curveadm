@@ -18,7 +18,7 @@ Linux 操作系统版本需求
 >
 > 而以下几种场景则可以在没有 nbd 模块的情况下正常工作：
 >   * 使用 iSCSI 客户端
->   * 自行编译 QUME 对接 CurveBS
+>   * 自行编译 QEMU 对接 CurveBS
 
 网络需求
 ---
