@@ -1,13 +1,13 @@
 目录
 ===
 
-* [部署 tgt](#部署-tgt)
+* [部署iscsi tgt target](#部署iscsi-tgt-target)
 * [升级 CurveAdm](#升级-curveadm)
 * [错误码表](#错误码表)
 * [问题与反馈](#问题与反馈)
 * [参与 CurveAdm 的开发](#参与-curveadm-的开发)
 
-部署 tgt
+部署iscsi tgt target
 ---
 
 如果你要在除 Linux 外的其它操作系统中使用 CurveBS 卷，可以部署[网易高性能版本 tgt][curve-tgt]：
