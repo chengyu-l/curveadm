@@ -56,7 +56,7 @@
 其他
 ===
 * [FAQ](FAQ)
-* [部署 tgt](others#部署-tgt)
+* [部署 tgt](others#部署iscsi-tgt-target)
 * [部署 PolarFS](others#部署-polarfs)
 * [部署 Memcached](deploy_memcached)
 * [升级 CurveAdm](others#升级-curveadm)
