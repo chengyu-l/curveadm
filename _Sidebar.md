@@ -56,6 +56,7 @@
 其他
 ===
 * [FAQ](FAQ)
+* [离线部署](offline-deployment)
 * [部署iscsi tgt target](others#部署iscsi-tgt-target)
 * [部署 PolarFS](others#部署-polarfs)
 * [部署 Memcached](deploy_memcached)
